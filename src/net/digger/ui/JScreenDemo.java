@@ -4,6 +4,7 @@ import java.awt.Rectangle;
 import java.io.IOException;
 
 import net.digger.ui.screen.JScreen;
+import net.digger.ui.screen.JScreenRegion;
 import net.digger.ui.screen.JScreenWindowState;
 import net.digger.ui.screen.color.Attr;
 import net.digger.ui.screen.color.CGAColor;
@@ -65,7 +66,7 @@ public class JScreenDemo {
 			"JScreen is a Java Swing component which provides a text",
 			"screen display.  It was conceived to enable porting old",
 			"DOS programs to a modern cross-platform environment, while",
-			"maintaining the original look and feel."
+			"retaining their original look and feel."
 		);
 		Delay.second(2);
 
@@ -158,18 +159,18 @@ public class JScreenDemo {
 			screen.setTextColors(CGAColor.LIGHT_GREY, CGAColor.BLACK, Attr.BOLD);
 			screen.print("White ");
 			screen.println();
-			screen.setTextColors(CGAColor.GREEN, CGAColor.BLUE, Attr.BOLD);
+			screen.setTextColors(CGAColor.LIGHT_GREY, CGAColor.BLUE, Attr.BOLD);
 			screen.print("Yes, ");
-			screen.setTextColors(CGAColor.GREEN, CGAColor.GREEN, Attr.BOLD);
+			screen.setTextColors(CGAColor.CYAN, CGAColor.GREEN, Attr.BOLD);
 			screen.print("you ");
-			screen.setTextColors(CGAColor.GREEN, CGAColor.CYAN, Attr.BOLD);
+			screen.setTextColors(CGAColor.RED, CGAColor.CYAN, Attr.BOLD);
 			screen.print("get ");
-			screen.setTextColors(CGAColor.GREEN, CGAColor.RED, Attr.BOLD);
+			screen.setTextColors(CGAColor.BLUE, CGAColor.RED, Attr.BOLD);
 			screen.print("back");
-			screen.setTextColors(CGAColor.GREEN, CGAColor.MAGENTA, Attr.BOLD);
+			screen.setTextColors(CGAColor.BROWN, CGAColor.MAGENTA, Attr.BOLD);
 			screen.print("ground ");
-			screen.setTextColors(CGAColor.GREEN, CGAColor.BROWN, Attr.BOLD);
-			screen.print("colors ");
+			screen.setTextColors(CGAColor.MAGENTA, CGAColor.BROWN, Attr.BOLD);
+			screen.print("colors, ");
 			screen.setTextColors(CGAColor.GREEN, CGAColor.LIGHT_GREY, Attr.BOLD);
 			screen.print("too.");
 			screen.resetTextColors();
@@ -178,7 +179,16 @@ public class JScreenDemo {
 		});
 		Delay.second(2);
 
-		String ansi = "\u001b[1;30mA\u001b[31mN\u001b[32mS\u001b[33mI\u001b[34m!\u001b[35m!\u001b[36m!\u001b[37m!";
+		writeTextWin(
+			"And, of course..."
+		);
+		screen.setTextAttr(Attr.BLINKING, true);
+		screen.print("        BLINK");
+		screen.setTextAttr(Attr.BLINKING, false);
+		screen.println();
+		Delay.second(2);
+
+		String ansi = "\u001b[1;30mA\u001b[31mN\u001b[32mS\u001b[33mI\u001b[5;34m!\u001b[25;35m!\u001b[36m!\u001b[37m!";
 		writeTextWin(
 			"You can optionally turn on support for ANSI escape codes,",
 			"to interpret strings like this one, as you can see below:"
@@ -193,15 +203,6 @@ public class JScreenDemo {
 			screen.resetTextColors();
 			screen.println(ansi);
 		});
-		Delay.second(2);
-
-		writeTextWin(
-			"And, of course..."
-		);
-		screen.setTextAttr(Attr.BLINKING, true);
-		screen.print("        BLINK");
-		screen.setTextAttr(Attr.BLINKING, false);
-		screen.println();
 		Delay.second(2);
 
 		writeTextWin(
@@ -236,6 +237,17 @@ public class JScreenDemo {
 		Delay.second(2);
 		
 		writeTextWin(
+			"With JScreen, you can save the contents of the screen,",
+			"a window, or any arbitrary region, to restore later.",
+			"We'll grab a snapshot of the window below before moving",
+			"on..."
+		);
+		Delay.second(1);
+		screen.restoreWindowState(demoWinSave);
+		JScreenRegion save = screen.readWindow();
+		Delay.second(1);
+		
+		writeTextWin(
 			"JScreen allows you to fill the screen, a window, or any",
 			"arbitrary region."
 		);
@@ -256,7 +268,9 @@ public class JScreenDemo {
 
 		inDemoWin(() -> {
 			int delay = 250;
-			Rectangle region = new Rectangle(5, 1, 20, 5);
+			Rectangle region = new Rectangle(5, 1, 20, 6);
+			Delay.milli(delay);
+			screen.scrollRegionUp(region);
 			Delay.milli(delay);
 			screen.scrollRegionUp(region);
 			Delay.milli(delay);
@@ -289,6 +303,17 @@ public class JScreenDemo {
 			}
 		});
 		Delay.second(2);
+
+		writeTextWin(
+			"Fast enough for you?",
+			"Now we'll restore the window contents we saved earlier."
+		);
+		Delay.second(1);
+		
+		inDemoWin(() -> {
+			screen.writeWindow(save);
+		});
+		Delay.second(1);
 
 		writeTextWin(
 			"That concludes our demo for now, but there is more JScreen",
