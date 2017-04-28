@@ -23,6 +23,10 @@ The JScreenDemo and DisplayANSI sample programs show off some more of what JScre
 And, of course, the source is available to learn every nuance.
 
 
+## Dependencies
+* Java 8
+* [net.digger.util.Delay](https://gitlab.com/digger.net/Java/Utils)
+
 ## License
 JScreen is provided under the terms of the GNU LGPLv3.
 
