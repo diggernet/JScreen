@@ -63,13 +63,18 @@ public class DisplayANSI {
 		put(Integer.MAX_VALUE, "Unlimited");
 	}};
 	private JScreen screen;
-	private int bps = 2400;
+	private int bps = 9600;
 	private Path file;
 	private static boolean restart = true;
 	
 	public static void main(String[] args) throws IOException {
 		if (args.length < 1) {
-			System.out.println("oops");
+			System.out.println();
+			System.out.println("DisplayANSI, a simple ANSI art viewer.");
+			System.out.println("Usage:");
+			System.out.println("\tjava -jar DisplayANSI.jar <filename>");
+			System.out.println("Right-click the screen for options.");
+			System.out.println();
 			return;
 		}
 		
@@ -79,12 +84,12 @@ public class DisplayANSI {
 			if (restart) {
 				ansi.display();
 			}
-			Delay.milli(1000);
+			Delay.milli(500);
 		}
 	}
 	
 	public DisplayANSI() {
-		screen = JScreen.createJScreenWindow("DisplayANSI", PCScreenMode.VGA_80x25);
+		screen = JScreen.createJScreenWindow("DisplayANSI (right-click for options)", PCScreenMode.VGA_80x25);
 		screen.setTextProtocol(new ANSI(screen));
 		JPopupMenu menu = screen.getContextMenu();
 		JMenuItem reset = new JMenuItem("Restart");
