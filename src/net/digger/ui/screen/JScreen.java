@@ -1527,46 +1527,46 @@ public class JScreen implements Closeable {
 	// ##### Screen region filling methods #####
 	
 	/**
-	 * Fill the screen with the given character.
-	 * @param ch Character to fill with.
-	 * @param fg Foreground color to use.
-	 * @param bg Background color to use.
-	 * @param attrs Text attributes to use.
+	 * Fill the screen.
+	 * @param ch Character to fill with, or null to preserve existing characters.
+	 * @param fg Foreground color to use, or null to preserve existing FG.
+	 * @param bg Background color to use, or null to preserve existing BG.
+	 * @param attrs Text attributes to use.  Omit to clear existing attributes.  Use (Attr[])null to preserve existing attributes.
 	 */
-	public void fillScreen(char ch, int fg, int bg, Attr... attrs) {
+	public void fillScreen(Character ch, Integer fg, Integer bg, Attr... attrs) {
 		fillCells(screenCells, ch, fg, bg, attrs);
 	}
 	
 	/**
-	 * Fill the current text window with the given character.
-	 * @param ch Character to fill with.
-	 * @param fg Foreground color to use.
-	 * @param bg Background color to use.
-	 * @param attrs Text attributes to use.
+	 * Fill the current text window.
+	 * @param ch Character to fill with, or null to preserve existing characters.
+	 * @param fg Foreground color to use, or null to preserve existing FG.
+	 * @param bg Background color to use, or null to preserve existing BG.
+	 * @param attrs Text attributes to use.  Omit to clear existing attributes.  Use (Attr[])null to preserve existing attributes.
 	 */
-	public void fillWindow(char ch, int fg, int bg, Attr... attrs) {
+	public void fillWindow(Character ch, Integer fg, Integer bg, Attr... attrs) {
 		fillCells(window, ch, fg, bg, attrs);
 	}
 	
 	/**
-	 * Fill the given window-relative region with the given character.
-	 * @param ch Character to fill with.
-	 * @param fg Foreground color to use.
-	 * @param bg Background color to use.
-	 * @param attrs Text attributes to use.
+	 * Fill the given window-relative region.
+	 * @param ch Character to fill with, or null to preserve existing characters.
+	 * @param fg Foreground color to use, or null to preserve existing FG.
+	 * @param bg Background color to use, or null to preserve existing BG.
+	 * @param attrs Text attributes to use.  Omit to clear existing attributes.  Use (Attr[])null to preserve existing attributes.
 	 */
-	public void fillRegion(Rectangle region, char ch, int fg, int bg, Attr... attrs) {
+	public void fillRegion(Rectangle region, Character ch, Integer fg, Integer bg, Attr... attrs) {
 		fillCells(windowRegionToScreen(region), ch, fg, bg, attrs);
 	}
 	
 	/**
-	 * Fill the given screen-relative region with the given character.
-	 * @param ch Character to fill with.
-	 * @param fg Foreground color to use.
-	 * @param bg Background color to use.
+	 * Fill the given screen-relative region.
+	 * @param ch Character to fill with, or null to leave existing characters.
+	 * @param fg Foreground color to use, or null to leave existing FG.
+	 * @param bg Background color to use, or null to leave existing BG.
 	 * @param attrs Text attributes to use.
 	 */
-	private void fillCells(Rectangle region, char ch, int fg, int bg, Attr... attrs) {
+	private void fillCells(Rectangle region, Character ch, Integer fg, Integer bg, Attr... attrs) {
 		if ((region.width < 1) || (region.height < 1)) {
 			// nothing to do
 			return;
@@ -1574,11 +1574,19 @@ public class JScreen implements Closeable {
 		for (int y=region.y; y<(region.y + region.height); y++) {
 			for (int x=region.x; x<(region.x + region.width); x++) {
 				JScreenCell cell = cells[y][x];
-				cell.ch = ch;
-				cell.font = font;
-				cell.fg = fg;
-				cell.bg = bg;
-				cell.setAttrs(attrs);
+				if (ch != null) {
+					cell.ch = ch;
+					cell.font = font;
+				}
+				if (fg != null) {
+					cell.fg = fg;
+				}
+				if (bg != null) {
+					cell.bg = bg;
+				}
+				if (attrs != null) {
+					cell.setAttrs(attrs);
+				}
 			}
 		}
 		if (ArrayUtils.contains(attrs, Attr.BLINKING)) {
