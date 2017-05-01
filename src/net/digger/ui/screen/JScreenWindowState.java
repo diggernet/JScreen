@@ -39,6 +39,14 @@ public class JScreenWindowState {
 	 */
 	public Point cursor;
 	/**
+	 * Is the cursor visible?
+	 */
+	public boolean cursorVisible;
+	/**
+	 * Is the cursor blinking?
+	 */
+	public boolean cursorBlink;
+	/**
 	 * The saved current text font index.
 	 */
 	public int font;

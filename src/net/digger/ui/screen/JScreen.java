@@ -109,7 +109,7 @@ public class JScreen implements Closeable {
 	// current cursor position (in chars, relative to full screen)
 	private Point cursor = new Point(0, 0);
 	// show/hide cursor
-	private boolean cursorEnabled = true;
+	private boolean cursorVisible = true;
 	// is the cursor blinking?
 	private boolean cursorBlink = true;
 	
@@ -210,7 +210,7 @@ public class JScreen implements Closeable {
 						blinkingChars = false;
 					}
 				}
-				if (cursorEnabled && cursorBlink) {
+				if (cursorVisible && cursorBlink) {
 					JScreenCell cell = cells[cursor.y][cursor.x];
 					cell.setAttr(Attr.IS_BLINKED, blinked);
 					screen.repaint(cellPixels(cursor));
@@ -734,14 +734,14 @@ public class JScreen implements Closeable {
 	 * Make the cursor visible.
 	 */
 	public void showCursor() {
-		cursorEnabled = true;
+		cursorVisible = true;
 	}
 	
 	/**
 	 * Make the cursor hidden.
 	 */
 	public void hideCursor() {
-		cursorEnabled = false;
+		cursorVisible = false;
 	}
 	
 	/**
@@ -822,7 +822,7 @@ public class JScreen implements Closeable {
 		int oldY = cursor.y;
 		cursor.x = x;
 		cursor.y = y;
-		if (cursorEnabled) {
+		if (cursorVisible) {
 			screen.repaint(cellPixels(oldX, oldY));
 			screen.repaint(cellPixels(cursor));
 		}
@@ -927,6 +927,8 @@ public class JScreen implements Closeable {
 		JScreenWindowState state = new JScreenWindowState();
 		state.window = getWindow();
 		state.cursor = getCursor();
+		state.cursorVisible = cursorVisible;
+		state.cursorBlink = cursorBlink;
 		state.font = font;
 		state.fgColor = fgColor;
 		state.bgColor = bgColor;
@@ -941,6 +943,8 @@ public class JScreen implements Closeable {
 	public void restoreWindowState(JScreenWindowState state) {
 		setWindow(state.window);
 		setCursor(state.cursor);
+		cursorVisible = state.cursorVisible;
+		cursorBlink = state.cursorBlink;
 		font = state.font;
 		fgColor = state.fgColor;
 		bgColor = state.bgColor;
@@ -1933,7 +1937,7 @@ public class JScreen implements Closeable {
 					g.setColor(bg);
 					g.fillRect(cellBounds.x, cellBounds.y, cellBounds.width, cellBounds.height);
 				}
-				if ((cursorRenderer != null) && cursorEnabled && (cursor.x == x) && (cursor.y == y) 
+				if ((cursorRenderer != null) && cursorVisible && (cursor.x == x) && (cursor.y == y) 
 						&& (!cursorBlink || !cells[y][x].attrs.contains(Attr.IS_BLINKED))) {
 					// draw the cursor, if it is enabled, in this cell, and not blinking or not currently blinked
 					cursorRenderer.drawCursor(g, cellBounds, palette.getFG(cells[y][x]), fontScale);

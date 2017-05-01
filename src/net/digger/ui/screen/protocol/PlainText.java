@@ -49,11 +49,10 @@ public class PlainText extends JScreenTextProtocol {
 			case 8:		// ^H	BS
 				screen.backspace();
 				break;
-			//TODO: tab???
+			//TODO: ^I	Tab?
 			case 10:	// ^J	LF
 				screen.lineFeed();
 				break;
-			//TODO: ^K (VT) cursor to home in GECP ANSI?
 			case 12:	// ^L	FF
 				screen.clearWindow();
 				break;

@@ -47,13 +47,13 @@ public class CP437CharMap extends JScreenCharMap {
 		'♦',		// \u2666		4			0x04	^D	End Of Transmission
 		'♣',		// \u2663		5			0x05	^E	ENQuiry
 		'♠',		// \u2660		6			0x06	^F	ACKnowledgement
-		'•',		// \u2022		7			0x07	^G	BELl				(doesn't print in TP write, but does in framewin)
-		'◘',		// \u25D8		8			0x08	^H	BackSpace			(does BS in TP write, but prints in framewin)
+		'•',		// \u2022		7			0x07	^G	BELl
+		'◘',		// \u25D8		8			0x08	^H	BackSpace
 		'○',		// \u25CB		9			0x09	^I	Horizontal Tab
-		'◙',		// \u25D9		10			0x0A	^J	Line Feed			(does LF in TP write, but prints in framewin)
+		'◙',		// \u25D9		10			0x0A	^J	Line Feed
 		'♂',		// \u2642		11			0x0B	^K	Vertical Tab
 		'♀',		// \u2640		12			0x0C	^L	Form Feed
-		'♪',		// \u266A		13			0x0D	^M	Carriage Return		(does CR in TP write, but prints in framewin)
+		'♪',		// \u266A		13			0x0D	^M	Carriage Return
 		'♫',		// \u266B		14			0x0E	^N	Shift Out
 		'☼',		// \u263C		15			0x0F	^O	Shift In
 		 
