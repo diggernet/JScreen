@@ -129,7 +129,7 @@ public class DisplayANSI {
 	public void display() throws IOException {
 		restart = false;
 		int oldbps = bps;
-		int wait = 1000000 / (bps / 8);
+		int wait = (int)(1000000 / (bps / 8.0));
 		System.out.println("Wait: " + wait);
 		for (String line : Files.readAllLines(file, Charset.forName("CP437"))) {
 			screen.printlnBPS(bps);
@@ -137,7 +137,7 @@ public class DisplayANSI {
 			for (int i=0; i<line.length(); i++) {
 				if (bps != oldbps) {
 					oldbps = bps;
-					wait = 1000000 / (bps / 8);
+					wait = (int)(1000000 / (bps / 8.0));
 					System.out.println("Wait: " + wait);
 				}
 				screen.print(line.charAt(i));

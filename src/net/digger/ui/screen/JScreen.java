@@ -1481,7 +1481,7 @@ public class JScreen implements Closeable {
 		// pause between displaying chars to simulate modem speed
 		// microseconds = 1,000,000us/s / cps
 		// cps = bps / 8
-		int wait = 1000000 / (bps / 8);
+		int wait = (int)(1000000 / (bps / 8.0));
 		for (int i=0; i<str.length(); i++) {
 			print(str.charAt(i));
 			Delay.micro(wait);
