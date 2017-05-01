@@ -12,8 +12,8 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.io.Closeable;
 import java.util.EnumSet;
-import java.util.concurrent.Executors;
-import java.util.concurrent.ScheduledExecutorService;
+import java.util.concurrent.ScheduledFuture;
+import java.util.concurrent.ScheduledThreadPoolExecutor;
 import java.util.concurrent.TimeUnit;
 import java.util.function.Consumer;
 
@@ -112,6 +112,7 @@ public class JScreen implements Closeable {
 	private boolean cursorVisible = true;
 	// is the cursor blinking?
 	private boolean cursorBlink = true;
+	private ScheduledFuture<?> cursorBlinker = null;
 	
 	// interprets text protocol (ANSI, AVATAR, etc)
 	private JScreenTextProtocol protocol;
@@ -120,7 +121,7 @@ public class JScreen implements Closeable {
 	
 	// screen effects
 	private boolean scanLines = false;
-	private final ScheduledExecutorService scheduler = Executors.newScheduledThreadPool(1);
+	private ScheduledThreadPoolExecutor scheduler = null;
 	private boolean blinkingChars = false;
 	private boolean blinked = false;
 	
@@ -186,8 +187,26 @@ public class JScreen implements Closeable {
 		addFontScaleMenus();
 		
 		// blink text
-		// TODO: this currently only sets blink rate using original screen mode, and cannot be updated.
-		scheduler.scheduleAtFixedRate(new Runnable() {
+		startBlinker(mode.blinkRate);
+		
+		Runtime.getRuntime().addShutdownHook(new Thread() {
+			@Override
+			public void run() {
+				close();
+			}
+		});
+	}
+	
+
+	private void startBlinker(double blinkRate) {
+		if (scheduler == null) {
+			scheduler = new ScheduledThreadPoolExecutor(1);
+			scheduler.setRemoveOnCancelPolicy(true);
+		}
+		if (cursorBlinker != null) {
+			cursorBlinker.cancel(false);
+		}
+		cursorBlinker = scheduler.scheduleAtFixedRate(new Runnable() {
 			@Override
 			public void run() {
 				// toggle the state of the blink
@@ -216,23 +235,15 @@ public class JScreen implements Closeable {
 					screen.repaint(cellPixels(cursor));
 				}
 			}
-		}, 0, (int)(1000 / mode.blinkRate), TimeUnit.MILLISECONDS);
-		
-		Runtime.getRuntime().addShutdownHook(new Thread() {
-			@Override
-			public void run() {
-				close();
-			}
-		});
+		}, 0, (int)(1000 / blinkRate), TimeUnit.MILLISECONDS);
 	}
 	
-
 	/**
 	 * Call when done with the JScreen component, to clean up resources.
 	 */
 	@Override
 	public void close() {
-		if (!scheduler.isShutdown()) {
+		if ((scheduler != null) && !scheduler.isShutdown()) {
 			scheduler.shutdownNow();
 		}
 	}
@@ -558,6 +569,7 @@ public class JScreen implements Closeable {
 		setTextColors(palette.defaultFG, palette.defaultBG);
 		setTextFonts(mode.font);
 		setTextScreenSize(new Dimension(mode.width, mode.height));
+		startBlinker(mode.blinkRate);
 	}
 	
 	// ##### Screen size methods #####
