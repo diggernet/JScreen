@@ -65,6 +65,7 @@ import net.digger.util.Delay;
  * @author walton
  */
 public class JScreen implements Closeable {
+	private static final String VERSION = "1.0";
 	// default values
 	private static final String DEFAULT_WINDOW_TITLE = "JScreen";
 	private static final JScreenMode DEFAULT_SCREEN_MODE = JScreenMode.DEFAULT_MODE;
@@ -178,7 +179,7 @@ public class JScreen implements Closeable {
 		if (copyright != null) {
 			menu.add(new JMenuItem(copyright));
 		}
-		menu.add(new JMenuItem("JScreen \u00A92017 by David Walton"));
+		menu.add(new JMenuItem("JScreen v" + VERSION + " \u00A92017 by David Walton"));
 		fontMenu = new JMenu("Fonts");
 		menu.add(fontMenu);
 		addFontMenus();
