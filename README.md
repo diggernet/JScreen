@@ -1,4 +1,3 @@
-
 # JScreen
 JScreen is a Java Swing component which provides a text screen display.
 
@@ -25,7 +24,7 @@ And, of course, the source is available to learn every nuance.
 
 ## Dependencies
 * Java 8
-* [net.digger.util.Delay](https://gitlab.com/digger.net/Java/Utils)
+* [net.digger.util.Delay](https://gitlab.com/diggernet/JavaUtils)
 
 ## License
 JScreen is provided under the terms of the GNU LGPLv3.
