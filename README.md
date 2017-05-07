@@ -23,7 +23,9 @@ And, of course, the source is available to learn every nuance.
 
 
 ## Dependencies
-* Java 8
+* [Java 8](https://www.oracle.com/java)
+* [Apache Commons Lang](https://commons.apache.org/proper/commons-lang)
+* [Apache Commons Collections](https://commons.apache.org/proper/commons-collections)
 * [net.digger.util.Delay](https://gitlab.com/diggernet/JavaUtils)
 
 ## License
