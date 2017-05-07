@@ -1,7 +1,13 @@
 package net.digger.ui.screen.io;
 
+import java.awt.Toolkit;
+import java.awt.datatransfer.Clipboard;
+import java.awt.datatransfer.DataFlavor;
+import java.awt.datatransfer.Transferable;
+import java.awt.datatransfer.UnsupportedFlavorException;
 import java.awt.event.KeyEvent;
 import java.awt.event.KeyListener;
+import java.io.IOException;
 import java.util.ArrayDeque;
 
 import net.digger.ui.screen.JScreen;
@@ -59,22 +65,14 @@ public class JScreenKeyboard {
 			
 			@Override
 			public void keyPressed(KeyEvent e) {
+				// only add if there won't be a KEY_TYPED event
 				if (e.isActionKey()) {
-					// only add if there won't be a KEY_TYPED event
-					addEvent(e);
+					addKeyEvent(e);
 				}
 			}
 			
 			private void addEvent(KeyEvent e) {
-				if (keyBufferEnabled) {
-					synchronized(keyBuffer) {
-						keyBuffer.add(e);
-						if (KEY_DEBUG) {
-							dumpKey(keyBuffer.peekLast());
-						}
-						keyBuffer.notify();
-					}
-				}
+				addKeyEvent(e);
 			}
 		});
 	}
@@ -85,11 +83,20 @@ public class JScreenKeyboard {
 	 * Turn the key event buffer on/off.
 	 * This implements keyboard input where key events wait in a buffer until you read them,
 	 * or you can do a blocking read to wait for a key event.
-	 * Defaults to off.  You must turn it on if you want to use JScreen for keyboard input.
+	 * Defaults to off, to avoid having the buffer grow indefinitely when not in use.  
+	 * You must turn it on if you want to use keyboard input.
 	 * @param enable
 	 */
 	public void enableKeyBuffer(boolean enable) {
 		keyBufferEnabled = enable;
+	}
+	
+	/**
+	 * Check if the key buffer is enabled;
+	 * @return
+	 */
+	public boolean isKeyBufferEnabled() {
+		return keyBufferEnabled;
 	}
 	
 	/**
@@ -130,6 +137,56 @@ public class JScreenKeyboard {
 				keyBuffer.wait();
 			}
 			return keyBuffer.remove();
+		}
+	}
+	
+	/**
+	 * Add a KeyEvent to the key buffer.
+	 * @param event
+	 */
+	private void addKeyEvent(KeyEvent event) {
+		if (keyBufferEnabled) {
+			synchronized(keyBuffer) {
+				keyBuffer.add(event);
+				if (KEY_DEBUG) {
+					dumpKey(keyBuffer.peekLast());
+				}
+				keyBuffer.notify();
+			}
+		}
+	}
+
+	/**
+	 * Add KeyEvents replicating the given string to the key buffer.
+	 * This can be used for pasting text, and it will be handled as though it was typed.
+	 * @param text
+	 */
+	public void addKeyEvents(String text) {
+		if (!keyBufferEnabled || (text == null)) {
+			return;
+		}
+		for (int i=0; i<text.length(); i++) {
+			int modifiers = 0;
+			char ch = text.charAt(i);
+			if (Character.isUpperCase(ch)) {
+				modifiers |= KeyEvent.SHIFT_DOWN_MASK;
+			}
+			KeyEvent event = new KeyEvent(screen.getComponent(), KeyEvent.KEY_TYPED, System.currentTimeMillis(), modifiers, KeyEvent.VK_UNDEFINED, ch);
+			addKeyEvent(event);
+		}
+	}
+	
+	public void pasteClipboard() {
+		Clipboard clipboard = Toolkit.getDefaultToolkit().getSystemClipboard();
+		try {
+			String text = null;
+			Transferable contents = clipboard.getContents(null);
+			if ((contents != null) && (contents.isDataFlavorSupported(DataFlavor.stringFlavor))) {
+				text = (String)contents.getTransferData(DataFlavor.stringFlavor);
+			}
+			addKeyEvents(text);
+		} catch (IllegalStateException | UnsupportedFlavorException | IOException ex) {
+			// If something goes wrong, just don't paste.
 		}
 	}
 	

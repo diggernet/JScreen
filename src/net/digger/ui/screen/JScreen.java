@@ -9,7 +9,6 @@ import java.awt.Point;
 import java.awt.Rectangle;
 import java.awt.Toolkit;
 import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
 import java.io.Closeable;
 import java.util.EnumSet;
 import java.util.concurrent.ScheduledFuture;
@@ -180,6 +179,15 @@ public class JScreen implements Closeable {
 			menu.add(new JMenuItem(copyright));
 		}
 		menu.add(new JMenuItem("JScreen v" + VERSION + " \u00A92017 by David Walton"));
+		
+		JMenuItem paste = new JMenuItem("Paste text from clipboard");
+		menu.add(paste);
+		paste.addActionListener((ActionEvent e) -> {
+			if (keyboard != null) {
+				keyboard.pasteClipboard();
+			}
+		});
+		
 		fontMenu = new JMenu("Fonts");
 		menu.add(fontMenu);
 		addFontMenus();
@@ -2178,11 +2186,8 @@ public class JScreen implements Closeable {
 				item.setActionCommand(String.valueOf(i));
 				group.add(item);
 				scaleMenu.add(item);
-				item.addActionListener(new ActionListener() {
-					@Override
-					public void actionPerformed(ActionEvent e) {
-						setFontScale(Integer.parseInt(e.getActionCommand()));
-					}
+				item.addActionListener((ActionEvent e) -> {
+					setFontScale(Integer.parseInt(e.getActionCommand()));
 				});
 			}
 		}
