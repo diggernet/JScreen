@@ -215,34 +215,31 @@ public class JScreen implements Closeable {
 		if (cursorBlinker != null) {
 			cursorBlinker.cancel(false);
 		}
-		cursorBlinker = scheduler.scheduleAtFixedRate(new Runnable() {
-			@Override
-			public void run() {
-				// toggle the state of the blink
-				blinked = !blinked;
-				if (blinkingChars) {
-					boolean found = false;
-					for (int y=0; y<screenCells.height; y++) {
-						for (int x=0; x<screenCells.width; x++) {
-							JScreenCell cell = cells[y][x];
-							if (cell.attrs.contains(Attr.BLINKING)) {
-								found = true;
-								cell.setAttr(Attr.IS_BLINKED, blinked);
-								screen.repaint(cellPixels(x, y));
-							}
+		cursorBlinker = scheduler.scheduleAtFixedRate(() -> {
+			// toggle the state of the blink
+			blinked = !blinked;
+			if (blinkingChars) {
+				boolean found = false;
+				for (int y=0; y<screenCells.height; y++) {
+					for (int x=0; x<screenCells.width; x++) {
+						JScreenCell cell = cells[y][x];
+						if (cell.attrs.contains(Attr.BLINKING)) {
+							found = true;
+							cell.setAttr(Attr.IS_BLINKED, blinked);
+							screen.repaint(cellPixels(x, y));
 						}
 					}
-					if (!found) {
-						// if no blinking chars found, stop checking
-						// anywhere that updates a cell to blink needs to turn this on
-						blinkingChars = false;
-					}
 				}
-				if (cursorVisible && cursorBlink) {
-					JScreenCell cell = cells[cursor.y][cursor.x];
-					cell.setAttr(Attr.IS_BLINKED, blinked);
-					screen.repaint(cellPixels(cursor));
+				if (!found) {
+					// if no blinking chars found, stop checking
+					// anywhere that updates a cell to blink needs to turn this on
+					blinkingChars = false;
 				}
+			}
+			if (cursorVisible && cursorBlink) {
+				JScreenCell cell = cells[cursor.y][cursor.x];
+				cell.setAttr(Attr.IS_BLINKED, blinked);
+				screen.repaint(cellPixels(cursor));
 			}
 		}, 0, (int)(1000 / blinkRate), TimeUnit.MILLISECONDS);
 	}
@@ -299,16 +296,14 @@ public class JScreen implements Closeable {
 	 */
 	public static JScreen createJScreenWindow(String title, JScreenMode mode, String copyright) {
 		JScreen screen = new JScreen(mode, copyright);
-		SwingUtilities.invokeLater(new Runnable() {
-			public void run() {
-				JFrame frame = new JFrame(title);
-				frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-				frame.setLayout(new BorderLayout());
-				frame.setResizable(false);
-				frame.add(screen.getComponent(), BorderLayout.CENTER);
-				frame.pack();
-				frame.setVisible(true);
-			}
+		SwingUtilities.invokeLater(() -> {
+			JFrame frame = new JFrame(title);
+			frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+			frame.setLayout(new BorderLayout());
+			frame.setResizable(false);
+			frame.add(screen.getComponent(), BorderLayout.CENTER);
+			frame.pack();
+			frame.setVisible(true);
 		});
 		return screen;
 	}
@@ -605,7 +600,7 @@ public class JScreen implements Closeable {
 	 */
 	public void setTextScreenSize(Dimension size) {
 		screenCells = new Rectangle(size);
-		System.out.println("Screen size: " + screenCells.getSize());
+//		System.out.println("Screen size: " + screenCells.getSize());
 		window = new Rectangle(screenCells);
 		cells = JScreenRegion.createCellGrid(screenCells.getSize());
 		setFontScale();
@@ -719,7 +714,7 @@ public class JScreen implements Closeable {
 		fontScale = scale;
 		cellSize = fonts[0].getCellSize(fontScale);
 		screenPixels = new Rectangle(screenCells.width * cellSize.width, screenCells.height * cellSize.height);
-		System.out.println("Screen pixels: " + screenPixels);
+//		System.out.println("Screen pixels: " + screenPixels);
 		addFontScaleMenus();
 		setPreferredSize();
 	}

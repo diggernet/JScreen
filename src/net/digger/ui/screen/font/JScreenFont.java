@@ -138,12 +138,12 @@ public class JScreenFont {
 		Dimension cellSize = sizes.get(scale);
 		if (cellSize == null) {
 			Rectangle2D cell = getCell(scale);
-			System.out.println("Cell: " + cell);
+//			System.out.println("Cell: " + cell);
 			cellSize = new Dimension();
 			cellSize.width = (int)Math.round(cell.getWidth() + 0.5);
 			cellSize.height = (int)Math.round(cell.getHeight() + 0.5);
 			sizes.put(scale, cellSize);
-			System.out.println("Cell size: " + cellSize + " (y offset " + getYOffset(scale) + ")");
+//			System.out.println("Cell size: " + cellSize + " (y offset " + getYOffset(scale) + ")");
 		}
 		return cellSize;
 	}
