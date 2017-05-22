@@ -96,7 +96,7 @@ public class JScreenDemo {
 
 		inDemoWin(() -> {
 			screen.unframeWindow();
-			screen.frameWindow(" This is a title ", PCFont.DOUBLE_FRAME);
+			screen.frameWindow("This is a title", PCFont.DOUBLE_FRAME_SPACE);
 		});
 		Delay.second(2);
 

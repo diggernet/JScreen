@@ -974,6 +974,11 @@ public class JScreen implements Closeable {
 	 * If the framing would result in the cursor being outside the window,
 	 * the cursor is moved to 0,0 in the new window.
 	 * Otherwise, cursor position relative to the whole screen stays the same.
+	 * Frame characters is an array of characters used to draw the frame, in this order:
+	 * Upper left corner, top, upper right corner, left side, right side,
+	 * lower left corner, bottom, lower right corner.
+	 * The frame character array can optionally have two additional characters to bracket the title:
+	 * Before title, after title.
 	 * @param title Title string.
 	 * @param frame Characters to use to draw the frame.
 	 */
@@ -989,6 +994,11 @@ public class JScreen implements Closeable {
 	 * If the framing would result in the cursor being outside the window,
 	 * the cursor is moved to 0,0 in the new window.
 	 * Otherwise, cursor position relative to the whole screen stays the same.
+	 * Frame characters is an array of characters used to draw the frame, in this order:
+	 * Upper left corner, top, upper right corner, left side, right side,
+	 * lower left corner, bottom, lower right corner.
+	 * The frame character array can optionally have two additional characters to bracket the title:
+	 * Before title, after title.
 	 * @param title Title string.  If null, no title is displayed.
 	 * @param frame Characters to use to draw the frame.  If null, no frame is drawn.
 	 * @param frameFG Window frame foreground color.
@@ -1020,9 +1030,17 @@ public class JScreen implements Closeable {
 		}
 		// title
 		if (title != null) {
-			title = StringUtils.substring(title, 0, window.width - 2);
-			coord.x = (window.width - title.length()) / 2;
-			putStr(coord, title);
+			if ((frame != null) && (frame.length > 9)) {
+				title = StringUtils.substring(title, 0, window.width - 4);
+				coord.x = (window.width - title.length()) / 2;
+				putChar(coord.x - 1, coord.y, frame[8], frameFG, frameBG, frameAttrs);
+				putStr(coord, title);
+				putChar(coord.x + title.length(), coord.y, frame[9], frameFG, frameBG, frameAttrs);
+			} else {
+				title = StringUtils.substring(title, 0, window.width - 2);
+				coord.x = (window.width - title.length()) / 2;
+				putStr(coord, title);
+			}
 		}
 		
 		if (frame != null) {
