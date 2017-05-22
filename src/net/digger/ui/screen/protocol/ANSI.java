@@ -4,6 +4,7 @@ import java.awt.Point;
 import java.awt.Rectangle;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.function.Consumer;
 
 import org.apache.commons.lang3.EnumUtils;
 
@@ -33,16 +34,19 @@ import net.digger.ui.screen.color.CGAColor;
 /**
  * Extends PlainText protocol to implement ANSI escape sequences.
  * https://en.wikipedia.org/wiki/ANSI_escape_code
+ * http://www.inwap.com/pdp10/ansicode.txt
  * @author walton
  */
 public class ANSI extends PlainText {
 	// The escape character
 	private static final char ESCAPE = 27;
+	private static final String CSI = ESCAPE + "[";
 	// Implemented ANSI command letters
 	// not in ANSI.SYS:  E, F, G, S, T
-	// not implemented:  i, n, l, h
-	private enum Command { A, B, C, D, f, H, J, K, m, s, u }
+	// not implemented:  i, l, h
+	private enum Command { A, B, C, D, f, H, J, K, m, n, s, u }
 
+	private Consumer<String> dsrCallback = null;	// Optional callback for DSR (ESC[6n) support.
 	private String buffer = "";			// Potential ANSI escape sequence
 	private String param = "";			// Potential ANSI parameter
 	private List<Integer> params = new ArrayList<>();	// ANSI parameter list
@@ -56,6 +60,19 @@ public class ANSI extends PlainText {
 	 */
 	public ANSI(JScreen screen) {
 		super(screen);
+	}
+	
+	/**
+	 * Create instance of the ANSI protocol handler, with DSR callback.
+	 * If DSR callback is provided, and Device Status Report (ESC[6n) is received,
+	 * the callback will be called with "ESC[<row>;<col>R", so that the application can
+	 * send that response.
+	 * @param screen JScreen for text display.
+	 * @param dsrCallback.
+	 */
+	public ANSI(JScreen screen, Consumer<String> dsrCallback) {
+		super(screen);
+		this.dsrCallback = dsrCallback;
 	}
 	
 	/**
@@ -346,6 +363,13 @@ public class ANSI extends PlainText {
 //						case 100: case 101: case 102: case 103: case 104: case 105: case 106: case 107:
 //							// Set background color, high intensity [aixterm (not in standard)]
 					}
+				}
+				break;
+			case n:		// DSR - Device Status Report
+				if (dsrCallback != null) {
+					Point cursor = screen.getCursor();
+					String response = CSI + cursor.y + ';' + cursor.x + 'R';
+					dsrCallback.accept(response);
 				}
 				break;
 			case s:		// SCP - Save Cursor Position
