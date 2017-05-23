@@ -176,6 +176,9 @@ public class JScreenKeyboard {
 		}
 	}
 	
+	/**
+	 * Paste text from clipboard to keyboard buffer.
+	 */
 	public void pasteClipboard() {
 		Clipboard clipboard = Toolkit.getDefaultToolkit().getSystemClipboard();
 		try {

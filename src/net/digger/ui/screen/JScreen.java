@@ -8,9 +8,16 @@ import java.awt.GraphicsEnvironment;
 import java.awt.Point;
 import java.awt.Rectangle;
 import java.awt.Toolkit;
+import java.awt.datatransfer.Clipboard;
+import java.awt.datatransfer.StringSelection;
 import java.awt.event.ActionEvent;
+import java.awt.event.MouseAdapter;
+import java.awt.event.MouseEvent;
+import java.awt.event.MouseMotionAdapter;
 import java.io.Closeable;
+import java.util.ArrayList;
 import java.util.EnumSet;
+import java.util.List;
 import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.ScheduledThreadPoolExecutor;
 import java.util.concurrent.TimeUnit;
@@ -124,6 +131,8 @@ public class JScreen implements Closeable {
 	private ScheduledThreadPoolExecutor scheduler = null;
 	private boolean blinkingChars = false;
 	private boolean blinked = false;
+	private Point selectionStarted = null;
+	private Rectangle selection = null;
 	
 	// key event handler
 	public final JScreenKeyboard keyboard;
@@ -168,9 +177,46 @@ public class JScreen implements Closeable {
 		keyboard = new JScreenKeyboard(this);
 		sound = new JScreenSound();
 		
-//TODO: Implement select and copy?
-//		screen.addMouseListener(new MouseAdapter() {});
-//		screen.addMouseListener(new MouseListener() {});
+		screen.addMouseListener(new MouseAdapter() {
+			@Override
+			public void mouseClicked(MouseEvent e) {
+				selectionStarted = null;
+				Rectangle oldSelection = selection;
+				selection = null;
+				if (oldSelection != null) {
+					screen.repaint(regionPixels(oldSelection));
+				}
+			}
+
+			@Override
+			public void mousePressed(MouseEvent e) {
+				selectionStarted = findCell(e.getPoint());
+			}
+
+			@Override
+			public void mouseReleased(MouseEvent e) {
+				selectionStarted = null;
+			}
+		});
+		
+		screen.addMouseMotionListener(new MouseMotionAdapter() {
+			@Override
+			public void mouseDragged(MouseEvent e) {
+				if (selectionStarted != null) {
+					Rectangle oldSelection = selection;
+					Point cell = findCell(e.getPoint());
+					selection = new Rectangle(
+							Math.min(selectionStarted.x, cell.x),
+							Math.min(selectionStarted.y, cell.y),
+							Math.abs(cell.x - selectionStarted.x) + 1,
+							Math.abs(cell.y - selectionStarted.y) + 1);
+					if (oldSelection != null) {
+						screen.repaint(regionPixels(oldSelection));
+					}
+					screen.repaint(regionPixels(selection));
+				}
+			}
+		});
 		
 		// right-click context menu
 		menu = new JPopupMenu();
@@ -180,7 +226,24 @@ public class JScreen implements Closeable {
 		}
 		menu.add(new JMenuItem("JScreen v" + VERSION + " \u00A92017 by David Walton"));
 		
-		JMenuItem paste = new JMenuItem("Paste text from clipboard");
+		JMenuItem copy = new JMenuItem("Copy selection text to clipboard");
+		menu.add(copy);
+		copy.addActionListener((ActionEvent e) -> {
+			if (selection != null) {
+				List<String> text = new ArrayList<>();
+				StringBuilder sb = new StringBuilder();
+				for (int y=selection.y; y<(selection.y + selection.height); y++) {
+					sb.setLength(0);
+					for (int x=selection.x; x<(selection.x + selection.width); x++) {
+						sb.append(cells[y][x].ch);
+					}
+					text.add(sb.toString());
+				}
+				Clipboard clipboard = Toolkit.getDefaultToolkit().getSystemClipboard();
+				clipboard.setContents(new StringSelection(StringUtils.join(text, '\n')), null);
+			}
+		});
+		JMenuItem paste = new JMenuItem("Paste text to keyboard buffer");
 		menu.add(paste);
 		paste.addActionListener((ActionEvent e) -> {
 			if (keyboard != null) {
@@ -225,7 +288,7 @@ public class JScreen implements Closeable {
 						JScreenCell cell = cells[y][x];
 						if (cell.attrs.contains(Attr.BLINKING)) {
 							found = true;
-							cell.setAttr(Attr.IS_BLINKED, blinked);
+							cell.setAttr(Attr._IS_BLINKED, blinked);
 							screen.repaint(cellPixels(x, y));
 						}
 					}
@@ -238,7 +301,7 @@ public class JScreen implements Closeable {
 			}
 			if (cursorVisible && cursorBlink) {
 				JScreenCell cell = cells[cursor.y][cursor.x];
-				cell.setAttr(Attr.IS_BLINKED, blinked);
+				cell.setAttr(Attr._IS_BLINKED, blinked);
 				screen.repaint(cellPixels(cursor));
 			}
 		}, 0, (int)(1000 / blinkRate), TimeUnit.MILLISECONDS);
@@ -1972,7 +2035,13 @@ public class JScreen implements Closeable {
 				// if there is a font available...
 				if ((font >= 0) && (font < fonts.length)) {
 					// render the cell
-					fonts[font].drawChar(g, cellBounds, palette, cells[y][x], fontScale);
+					if ((selection != null) && selection.contains(x, y)) {
+						cells[y][x].setAttr(Attr._IS_SELECTED, true);
+						fonts[font].drawChar(g, cellBounds, palette, cells[y][x], fontScale);
+						cells[y][x].setAttr(Attr._IS_SELECTED, false);
+					} else {
+						fonts[font].drawChar(g, cellBounds, palette, cells[y][x], fontScale);
+					}
 				} else {
 					// otherwise, paint it BG color
 					Color bg = palette.getBG(cells[y][x]);
@@ -1980,7 +2049,7 @@ public class JScreen implements Closeable {
 					g.fillRect(cellBounds.x, cellBounds.y, cellBounds.width, cellBounds.height);
 				}
 				if ((cursorRenderer != null) && cursorVisible && (cursor.x == x) && (cursor.y == y) 
-						&& (!cursorBlink || !cells[y][x].attrs.contains(Attr.IS_BLINKED))) {
+						&& (!cursorBlink || !cells[y][x].attrs.contains(Attr._IS_BLINKED))) {
 					// draw the cursor, if it is enabled, in this cell, and not blinking or not currently blinked
 					cursorRenderer.drawCursor(g, cellBounds, palette.getFG(cells[y][x]), fontScale);
 				}
