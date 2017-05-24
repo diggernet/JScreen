@@ -72,6 +72,7 @@ import net.digger.util.Delay;
  */
 public class JScreen implements Closeable {
 	private static final String VERSION = "1.0";
+	private static final String COPYRIGHT = "\u00A92017";
 	// default values
 	private static final String DEFAULT_WINDOW_TITLE = "JScreen";
 	private static final JScreenMode DEFAULT_SCREEN_MODE = JScreenMode.DEFAULT_MODE;
@@ -203,17 +204,13 @@ public class JScreen implements Closeable {
 			@Override
 			public void mouseDragged(MouseEvent e) {
 				if (selectionStarted != null) {
-					Rectangle oldSelection = selection;
 					Point cell = findCell(e.getPoint());
-					selection = new Rectangle(
+					selectCells(new Rectangle(
 							Math.min(selectionStarted.x, cell.x),
 							Math.min(selectionStarted.y, cell.y),
 							Math.abs(cell.x - selectionStarted.x) + 1,
-							Math.abs(cell.y - selectionStarted.y) + 1);
-					if (oldSelection != null) {
-						screen.repaint(regionPixels(oldSelection));
-					}
-					screen.repaint(regionPixels(selection));
+							Math.abs(cell.y - selectionStarted.y) + 1)
+					);
 				}
 			}
 		});
@@ -224,24 +221,12 @@ public class JScreen implements Closeable {
 		if (copyright != null) {
 			menu.add(new JMenuItem(copyright));
 		}
-		menu.add(new JMenuItem("JScreen v" + VERSION + " \u00A92017 by David Walton"));
+		menu.add(new JMenuItem("JScreen v" + VERSION + " " + COPYRIGHT + " by David Walton"));
 		
 		JMenuItem copy = new JMenuItem("Copy selection text to clipboard");
 		menu.add(copy);
 		copy.addActionListener((ActionEvent e) -> {
-			if (selection != null) {
-				List<String> text = new ArrayList<>();
-				StringBuilder sb = new StringBuilder();
-				for (int y=selection.y; y<(selection.y + selection.height); y++) {
-					sb.setLength(0);
-					for (int x=selection.x; x<(selection.x + selection.width); x++) {
-						sb.append(cells[y][x].ch);
-					}
-					text.add(sb.toString());
-				}
-				Clipboard clipboard = Toolkit.getDefaultToolkit().getSystemClipboard();
-				clipboard.setContents(new StringSelection(StringUtils.join(text, '\n')), null);
-			}
+			copySelectionToClipboard();
 		});
 		JMenuItem paste = new JMenuItem("Paste text to keyboard buffer");
 		menu.add(paste);
@@ -1998,6 +1983,65 @@ public class JScreen implements Closeable {
 		screen.repaint(regionPixels(region));
 	}
 	
+	// ##### Screen region selection methods #####
+	
+	/**
+	 * Select the text in the whole screen.
+	 */
+	public void selectScreen() {
+		selectCells(screenCells);
+	}
+	
+	/**
+	 * Select the text in the current text window.
+	 */
+	public void selectWindow() {
+		selectCells(window);
+	}
+	
+	/**
+	 * Select the text in the given window-relative region.
+	 * @param region
+	 */
+	public void selectRegion(Rectangle region) {
+		selectCells(windowRegionToScreen(region));
+	}
+
+	/**
+	 * Select the text in the given screen-relative region.
+	 * @param region
+	 */
+	private void selectCells(Rectangle region) {
+		Point ul = new Point(Math.max(screenCells.x, region.x), Math.max(screenCells.y, region.y));
+		Point lr = new Point(Math.min(screenCells.width, region.x + region.width),
+				Math.min(screenCells.height, region.y + region.height));
+		Rectangle oldSelection = selection;
+		selection = new Rectangle(ul.x, ul.y, lr.x - ul.x, lr.y - ul.y);
+		if (oldSelection != null) {
+			screen.repaint(regionPixels(oldSelection));
+		}
+		screen.repaint(regionPixels(selection));
+	}
+	
+	/**
+	 * Copy the selected text to clipboard.
+	 */
+	public void copySelectionToClipboard() {
+		if (selection != null) {
+			List<String> text = new ArrayList<>();
+			StringBuilder sb = new StringBuilder();
+			for (int y=selection.y; y<(selection.y + selection.height); y++) {
+				sb.setLength(0);
+				for (int x=selection.x; x<(selection.x + selection.width); x++) {
+					sb.append(cells[y][x].ch);
+				}
+				text.add(sb.toString());
+			}
+			Clipboard clipboard = Toolkit.getDefaultToolkit().getSystemClipboard();
+			clipboard.setContents(new StringSelection(StringUtils.join(text, '\n')), null);
+		}
+	}
+
 	// ##### Miscellaneous methods #####
 	
 	/**
