@@ -54,24 +54,16 @@ public class JScreenKeyboard {
 		screen.getComponent().addKeyListener(new KeyListener() {
 			@Override
 			public void keyTyped(KeyEvent e) {
-				addEvent(e);
+				addKeyEvent(e);
 			}
 			
 			@Override
 			public void keyReleased(KeyEvent e) {
-				// ignore KEY_RELEASED events
-//				addEvent(e);
+				addKeyEvent(e);
 			}
 			
 			@Override
 			public void keyPressed(KeyEvent e) {
-				// only add if there won't be a KEY_TYPED event
-				if (e.isActionKey()) {
-					addKeyEvent(e);
-				}
-			}
-			
-			private void addEvent(KeyEvent e) {
 				addKeyEvent(e);
 			}
 		});
@@ -142,17 +134,27 @@ public class JScreenKeyboard {
 	
 	/**
 	 * Add a KeyEvent to the key buffer.
+	 * KEY_RELEASED events are ignored, and KEY_PRESSED events are ignored unless isActionKey().
 	 * @param event
 	 */
-	private void addKeyEvent(KeyEvent event) {
-		if (keyBufferEnabled) {
-			synchronized(keyBuffer) {
-				keyBuffer.add(event);
-				if (KEY_DEBUG) {
-					dumpKey(keyBuffer.peekLast());
-				}
-				keyBuffer.notify();
+	public void addKeyEvent(KeyEvent event) {
+		if (!keyBufferEnabled) {
+			return;
+		}
+		if (event.getID() == KeyEvent.KEY_RELEASED) {
+			// ignore KEY_RELEASED events
+			return;
+		}
+		if ((event.getID() == KeyEvent.KEY_PRESSED) && !event.isActionKey()) {
+			// only add if there won't be a KEY_TYPED event
+			return;
+		}
+		synchronized(keyBuffer) {
+			keyBuffer.add(event);
+			if (KEY_DEBUG) {
+				dumpKey(keyBuffer.peekLast());
 			}
+			keyBuffer.notify();
 		}
 	}
 
