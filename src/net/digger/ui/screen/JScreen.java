@@ -2245,7 +2245,7 @@ public class JScreen implements Closeable {
 	 */
 	private void checkCellInScreen(Point coord) {
 		if (!screenCells.contains(coord)) {
-			throw new IllegalArgumentException("Cell " + coord + " is off-screen.");
+			throw new IllegalArgumentException("Cell " + coord + " is off-screen (" + screenCells + ").");
 		}
 	}
 	
@@ -2255,7 +2255,7 @@ public class JScreen implements Closeable {
 	 */
 	private void checkCellInWindow(Point coord) {
 		if (!window.contains(coord)) {
-			throw new IllegalArgumentException("Cell " + coord + " is outside of current window.");
+			throw new IllegalArgumentException("Cell " + coord + " is outside of current window (" + window + ").");
 		}
 	}
 	
@@ -2265,7 +2265,7 @@ public class JScreen implements Closeable {
 	 */
 	private void checkRegionInScreen(Rectangle region) {
 		if (!screenCells.contains(region)) {
-			throw new IllegalArgumentException("Cell region " + region + " is not on-screen.");
+			throw new IllegalArgumentException("Cell region " + region + " is not on-screen (" + screenCells + ").");
 		}
 	}
 	
@@ -2275,7 +2275,7 @@ public class JScreen implements Closeable {
 	 */
 	private void checkRegionInWindow(Rectangle region) {
 		if (!window.contains(region)) {
-			throw new IllegalArgumentException("Cell region " + region + " is outside of current window.");
+			throw new IllegalArgumentException("Cell region " + region + " is outside of current window (" + window + ").");
 		}
 	}
 	
@@ -2285,7 +2285,7 @@ public class JScreen implements Closeable {
 	 */
 	private void checkPixelInScreen(Point pixel) {
 		if (!screenPixels.contains(pixel)) {
-			throw new IllegalArgumentException("Pixel " + pixel + " is not on-screen.");
+			throw new IllegalArgumentException("Pixel " + pixel + " is not on-screen (" + screenPixels + ").");
 		}
 	}
 
