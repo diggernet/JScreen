@@ -61,7 +61,7 @@ public class PlainText extends JScreenTextProtocol {
 				break;
 			default:
 if (ch < 32) {
-System.out.println("PlainText: UNIMPLEMENTED CONTROL CODE: " + Integer.toHexString(ch));
+System.out.println("PlainText: Unimplemented Control Character: " + Integer.toHexString(ch));
 }
 				screen.putChar(ch);
 				break;

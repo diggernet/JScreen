@@ -7,6 +7,7 @@ import java.util.List;
 import java.util.function.Consumer;
 
 import org.apache.commons.lang3.EnumUtils;
+import org.apache.commons.lang3.StringUtils;
 
 import net.digger.ui.screen.JScreen;
 import net.digger.ui.screen.color.Attr;
@@ -35,16 +36,19 @@ import net.digger.ui.screen.color.CGAColor;
  * Extends PlainText protocol to implement ANSI escape sequences.
  * https://en.wikipedia.org/wiki/ANSI_escape_code
  * http://www.inwap.com/pdp10/ansicode.txt
+ * http://vt100.net/docs/
  * @author walton
  */
 public class ANSI extends PlainText {
 	// The escape character
 	private static final char ESCAPE = 27;
+	// Implemented ANSI escape sequence letters
+	private enum EscapeSequence { D, E, M };
 	private static final String CSI = ESCAPE + "[";
-	// Implemented ANSI command letters
+	// Implemented ANSI control sequence letters
+	private enum ControlSequence { A, B, C, D, f, H, J, K, m, n, r, s, u }
 	// not in ANSI.SYS:  E, F, G, S, T
 	// not implemented:  i, l, h
-	private enum Command { A, B, C, D, f, H, J, K, m, n, s, u }
 
 	private Consumer<String> dsrCallback = null;	// Optional callback for DSR (ESC[6n) support.
 	private String buffer = "";			// Potential ANSI escape sequence
@@ -53,6 +57,8 @@ public class ANSI extends PlainText {
 	private boolean inEscape = false;	// Are we in an escape sequence?
 	private boolean inControl = false;	// Are we in a control (ESC-[) sequence?
 	private Point cursor = null;		// Stored cursor position
+	private int topMargin = 0;			// Top of scrolling region
+	private int bottomMargin = 0;		// Bottom of scrolling region
 
 	/**
 	 * Create instance of the ANSI protocol handler.
@@ -64,9 +70,9 @@ public class ANSI extends PlainText {
 	
 	/**
 	 * Create instance of the ANSI protocol handler, with DSR callback.
-	 * If DSR callback is provided, and Device Status Report (ESC[6n) is received,
-	 * the callback will be called with "ESC[<row>;<col>R", so that the application can
-	 * send that response.
+	 * If DSR callback is provided, and Device Status Report (ESC[#n) is received,
+	 * the callback will be called with CPR ("ESC[<row>;<col>R") or DSR ("ESC[0n"),
+	 * so that the application can send that response.
 	 * @param screen JScreen for text display.
 	 * @param dsrCallback.
 	 */
@@ -108,10 +114,17 @@ public class ANSI extends PlainText {
 			if (ch == '[') {
 				// start a control sequence
 				inControl = true;
-			} else {
-				// non-control sequences are not implemented
-				printAndReset();
+				return;
 			}
+			EscapeSequence escseq = EnumUtils.getEnum(EscapeSequence.class, String.valueOf(ch));
+			if (escseq == null) {
+System.out.println("ANSI: Unimplemented Escape Sequence: ESC" + ch);
+				printAndReset();
+				return;
+			}
+			// we have a valid, implemented escape sequence.
+			doEscapeSequence(escseq);
+			reset();
 			return;
 		}
 		// we are in a control sequence.
@@ -136,13 +149,14 @@ public class ANSI extends PlainText {
 			return;
 		}
 		
-		// if we get a command which is invalid or not implemented...
-		Command cmd = EnumUtils.getEnum(Command.class, String.valueOf(ch));
-		if (cmd == null) {
+		// if we get a control sequence which is invalid or not implemented...
+		ControlSequence ctrlseq = EnumUtils.getEnum(ControlSequence.class, String.valueOf(ch));
+		if (ctrlseq == null) {
+System.out.println("ANSI: Unimplemented Control Sequence: ESC[" + StringUtils.join(params, ';') + ch);
 			printAndReset();
 			return;
 		}
-		// we have a valid, implemented command.
+		// we have a valid, implemented control sequence.
 		
 		// catch that last parameter
 		if (param.length() > 0) {
@@ -150,7 +164,7 @@ public class ANSI extends PlainText {
 			param = "";
 		}
 		
-		doCommand(cmd);
+		doControlSequence(ctrlseq);
 		reset();
 	}
 	
@@ -169,40 +183,92 @@ public class ANSI extends PlainText {
 	}
 	
 	/**
-	 * Performs the given ANSI command.
-	 * @param cmd
+	 * Performs the given ANSI escape sequence.
+	 * @param escseq
 	 */
-	private void doCommand(Command cmd) {
+	private void doEscapeSequence(EscapeSequence escseq) {
+		switch (escseq) {
+			case D:		// IND - Index
+				insideMargin(() -> {
+					Point coord = screen.getCursor();
+					Rectangle window = screen.getWindow();
+					if (coord.y < (window.height - 1)) {
+						screen.setCursor(coord.x, coord.y + 1);
+					} else {
+						screen.scrollWindowUp();
+					}
+				});
+				break;
+			case E:		// NEL - NExt Line
+				insideMargin(() -> {
+					super.print('\r');
+					super.print('\n');
+				});
+				break;
+			case M:		// RI - Reverse Index
+				insideMargin(() -> {
+					Point coord = screen.getCursor();
+					if (coord.y > 0) {
+						screen.setCursor(coord.x, coord.y - 1);
+					} else {
+						screen.scrollWindowDown();
+					}
+				});
+				break;
+		}
+	}
+	
+	/**
+	 * Performs the given ANSI control sequence.
+	 * @param ctrlseq
+	 */
+	private void doControlSequence(ControlSequence ctrlseq) {
 		Point coord;
 		Integer param;
 		Rectangle window;
 		
-		switch (cmd) {
+		switch (ctrlseq) {
 			case A:		// CUU - CUrsor Up
 				coord = screen.getCursor();
+				// move cursor, stopping at top margin
 				coord.y = Math.max(0, coord.y - getParam(1, 1));
+				if (topMargin > 0) {
+					coord.y = Math.max(coord.y, topMargin - 1);
+				}
 				screen.setCursor(coord);
 				break;
 			case B:		// CUD - CUrsor Down
 				coord = screen.getCursor();
 				window = screen.getWindow();
+				// move cursor, stopping at bottom margin
 				coord.y = Math.min(window.height - 1, coord.y + getParam(1, 1));
+				if (bottomMargin > 0) {
+					coord.y = Math.min(coord.y, bottomMargin - 1);
+				}
 				screen.setCursor(coord);
 				break;
 			case C:		// CUF - CUrsor Forward
 				coord = screen.getCursor();
 				window = screen.getWindow();
+				// move cursor, stopping at right margin
 				coord.x = Math.min(window.width - 1, coord.x + getParam(1, 1));
 				screen.setCursor(coord);
 				break;
 			case D:		// CUB - CUrsor Back
 				coord = screen.getCursor();
+				// move cursor, stopping at left margin
 				coord.x = Math.max(0, coord.x - getParam(1, 1));
 				screen.setCursor(coord);
 				break;
 			case H:		// CUP - CUrsor Position
 			case f:		// HVP - Horizontal and Vertical Position
-				screen.setCursor(getParam(2, 1) - 1, getParam(1, 1) - 1);
+				int x = getParam(2, 1);
+				int y = getParam(1, 1);
+				window = screen.getWindow();
+				// move cursor, stopping at edge of screen
+				x = Math.max(1, Math.min(window.width, x));
+				y = Math.max(1, Math.min(window.height, y));
+				screen.setCursor(x - 1, y - 1);
 				break;
 			case J:		// ED - Erase in Display
 				param = getParam(1, 0);
@@ -218,7 +284,7 @@ public class ANSI extends PlainText {
 						screen.clearWindow();
 						break;
 					default:
-						// ignore command for illegal parameter
+						// ignore control sequence for illegal parameter
 						break;
 				}
 				break;
@@ -235,7 +301,7 @@ public class ANSI extends PlainText {
 						screen.clearLine();
 						break;
 					default:
-						// ignore command for illegal parameter
+						// ignore control sequence for illegal parameter
 						break;
 				}
 				break;
@@ -367,9 +433,33 @@ public class ANSI extends PlainText {
 				break;
 			case n:		// DSR - Device Status Report
 				if (dsrCallback != null) {
-					Point cursor = screen.getCursor();
-					String response = CSI + cursor.y + ';' + cursor.x + 'R';
-					dsrCallback.accept(response);
+					String response;
+					param = getParam(1, 0);
+					switch (param) {
+						case 5:		// Send DSR (0=ready, 3=malfunction)
+							response = CSI + "0n";
+							dsrCallback.accept(response);
+							break;
+						case 6:		// Send CPR - Cursor Position Report
+							Point cursor = screen.getCursor();
+							response = CSI + cursor.y + ';' + cursor.x + 'R';
+							dsrCallback.accept(response);
+							break;
+					}
+				}
+				break;
+			case r:		// DECSTBM - DEC Set Top and Bottom Margins (scrolling region)
+				window = screen.getWindow();
+				int top = getParam(1, 1);
+				int bottom = getParam(2, window.height);
+				if ((top == 1) && (bottom == window.height)) {
+					topMargin = 0;
+					bottomMargin = 0;
+//System.out.printf("Top: %d, Bottom: %d\n", topMargin, bottomMargin);
+				} else if ((top > 0) && (bottom > 0) && (bottom > top)) {
+					topMargin = top;
+					bottomMargin = bottom;
+//System.out.printf("Top: %d, Bottom: %d\n", topMargin, bottomMargin);
 				}
 				break;
 			case s:		// SCP - Save Cursor Position
@@ -398,9 +488,40 @@ public class ANSI extends PlainText {
 	 * Prints buffer and resets the escape sequence state.
 	 */
 	private void printAndReset() {
-		for (int i=0; i<buffer.length(); i++) {
-			super.print(buffer.charAt(i));
-		}
+		insideMargin(() -> {
+			// print the buffer
+			for (int i=0; i<buffer.length(); i++) {
+				super.print(buffer.charAt(i));
+			}
+		});
+		// reset escape sequence state
 		reset();
+	}
+
+	private void insideMargin(Runnable callback) {
+		int dy = 0;
+		int dh = 0;
+		// if scrolling region has been set, adjust current window
+		if ((topMargin > 0) && (bottomMargin > 0)) {
+			Point cursor = screen.getCursor();
+			Rectangle window = screen.getWindow();
+			int bottom = Math.min(bottomMargin, window.height);
+			// only adjust if cursor is inside scrolling region
+			if (((cursor.y + 1) >= topMargin) && ((cursor.y + 1) <= bottom)) {
+				dy = topMargin - 1;
+				int height = (bottom - topMargin) + 1;
+				dh = height - window.height;
+				if ((dy != 0) || (dh != 0)) {
+//System.out.printf("DY: %d, DH: %d\n", dy, dh);
+					screen.adjustWindow(0, dy, 0, dh);
+				}
+			}
+		}
+		// call the callback
+		callback.run();
+		// if current window was adjusted, undo adjustment
+		if ((dy != 0) || (dh != 0)) {
+			screen.adjustWindow(0, -dy, 0, -dh);
+		}
 	}
 }
