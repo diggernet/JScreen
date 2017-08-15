@@ -149,6 +149,12 @@ System.out.println("ANSI: Unimplemented Escape Sequence: ESC" + ch);
 			return;
 		}
 		
+		// catch that last parameter
+		if (param.length() > 0) {
+			params.add(Integer.parseInt(param));
+			param = "";
+		}
+		
 		// if we get a control sequence which is invalid or not implemented...
 		ControlSequence ctrlseq = EnumUtils.getEnum(ControlSequence.class, String.valueOf(ch));
 		if (ctrlseq == null) {
@@ -157,12 +163,6 @@ System.out.println("ANSI: Unimplemented Control Sequence: ESC[" + StringUtils.jo
 			return;
 		}
 		// we have a valid, implemented control sequence.
-		
-		// catch that last parameter
-		if (param.length() > 0) {
-			params.add(Integer.parseInt(param));
-			param = "";
-		}
 		
 		doControlSequence(ctrlseq);
 		reset();
