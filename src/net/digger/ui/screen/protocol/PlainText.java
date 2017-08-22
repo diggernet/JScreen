@@ -41,29 +41,29 @@ public class PlainText extends JScreenTextProtocol {
 	@Override
 	public void print(char ch) {
 		switch (ch) {
-			case 0:		//		Null
+			case 0x00:		// ^@	NUL
 				break;
-			case 7:		// ^G	Bell
+			case 0x07:		// ^G	BEL
 				screen.sound.beep();
 				break;
-			case 8:		// ^H	BS
+			case 0x08:		// ^H	BS
 				screen.backspace();
 				break;
-			//TODO: ^I	Tab?
-			case 10:	// ^J	LF
+			//TODO: ^I	HT?
+			case 0x0a:	// ^J	LF
 				screen.lineFeed();
 				break;
-			case 12:	// ^L	FF
+			case 0x0c:	// ^L	FF
 				screen.clearWindow();
 				break;
-			case 13:	// ^M	CR
+			case 0x0d:	// ^M	CR
 				screen.carriageReturn();
 				break;
 			default:
-if (ch < 32) {
-System.out.println("PlainText: Unimplemented Control Character: 0x" + Integer.toHexString(ch));
-}
-				screen.putChar(ch);
+				if (ch < 32) {
+					System.out.println("PlainText: Unimplemented Control Character: 0x" + Integer.toHexString(ch));
+				}
+				super.print(ch);
 				break;
 		}
 	}

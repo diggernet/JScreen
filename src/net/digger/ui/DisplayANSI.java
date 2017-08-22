@@ -3,7 +3,6 @@ package net.digger.ui;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.io.IOException;
-import java.nio.charset.Charset;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
@@ -131,21 +130,18 @@ public class DisplayANSI {
 		int oldbps = bps;
 		int wait = (int)(1000000 / (bps / 8.0));
 		System.out.println("Wait: " + wait);
-		for (String line : Files.readAllLines(file, Charset.forName("CP437"))) {
-			screen.printlnBPS(bps);
-			// don't use screen.printBPS(line), so that we can change speed or restart in the middle of a line
-			for (int i=0; i<line.length(); i++) {
-				if (bps != oldbps) {
-					oldbps = bps;
-					wait = (int)(1000000 / (bps / 8.0));
-					System.out.println("Wait: " + wait);
-				}
-				screen.print(line.charAt(i));
-				Delay.micro(wait);
-				if (restart) {
-					screen.printlnBPS(bps);
-					return;
-				}
+		for (byte b : Files.readAllBytes(file)) {
+			char ch = (char)(b & 0xff);		// convert signed byte to unsigned char
+			if (bps != oldbps) {
+				oldbps = bps;
+				wait = (int)(1000000 / (bps / 8.0));
+				System.out.println("Wait: " + wait);
+			}
+			screen.print(ch);
+			Delay.micro(wait);
+			if (restart) {
+				screen.printlnBPS(bps);
+				return;
 			}
 		}
 	}
