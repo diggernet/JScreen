@@ -2,6 +2,7 @@ package net.digger.ui;
 
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.awt.event.KeyEvent;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
@@ -10,10 +11,12 @@ import java.util.Map;
 import java.util.TreeMap;
 
 import javax.swing.ButtonGroup;
+import javax.swing.JFrame;
 import javax.swing.JMenu;
 import javax.swing.JMenuItem;
 import javax.swing.JPopupMenu;
 import javax.swing.JRadioButtonMenuItem;
+import javax.swing.SwingUtilities;
 
 import net.digger.ui.screen.JScreen;
 import net.digger.ui.screen.mode.PCScreenMode;
@@ -83,6 +86,9 @@ public class DisplayANSI {
 			if (restart) {
 				ansi.display();
 			}
+			if (ansi.checkEscape()) {
+				break;
+			}
 			Delay.milli(500);
 		}
 	}
@@ -90,6 +96,8 @@ public class DisplayANSI {
 	public DisplayANSI() {
 		screen = JScreen.createJScreenWindow("DisplayANSI (right-click for options)", PCScreenMode.VGA_80x25);
 		screen.setTextProtocol(new ANSI(screen));
+		screen.hideCursor();
+		screen.keyboard.enableKeyBuffer(true);
 		JPopupMenu menu = screen.getContextMenu();
 		JMenuItem reset = new JMenuItem("Restart");
 		menu.add(reset);
@@ -115,6 +123,21 @@ public class DisplayANSI {
 				}
 			});
 		}
+	}
+	
+	public boolean checkEscape() {
+		while (screen.keyboard.isKeyEvent()) {
+			KeyEvent key = screen.keyboard.getKeyEvent();
+			if (key.getKeyChar() == KeyEvent.VK_ESCAPE) {
+				JFrame frame = (JFrame)SwingUtilities.getRoot(screen.getComponent());
+				if (frame != null) {
+					frame.dispose();
+				}
+				screen.close();
+				return true;
+			}
+		}
+		return false;
 	}
 
 	public void setFile(String file) {

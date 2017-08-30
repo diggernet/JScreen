@@ -47,7 +47,7 @@ public class ANSI extends PlainText {
 	private enum EscapeSequence { D, E, M };
 	private static final String CSI = ESCAPE + "[";
 	// Implemented ANSI control sequence letters
-	private enum ControlSequence { A, B, C, D, f, H, J, K, m, n, r, s, u }
+	private enum ControlSequence { A, B, C, D, f, H, J, K, M, m, n, r, s, u }
 	// not in ANSI.SYS:  E, F, G, S, T
 	// not implemented:  i, l, h
 
@@ -56,6 +56,18 @@ public class ANSI extends PlainText {
 	private Point cursor = null;		// Stored cursor position
 	private int topMargin = 0;			// Top of scrolling region
 	private int bottomMargin = 0;		// Bottom of scrolling region
+	private boolean inANSIMusic = false;	// Indicates if in an ANSI music sequence (ESC[M....^N).
+	private StringBuilder music = new StringBuilder();
+	/*
+	 * Parsing of ANSI music (MML) not implemented.  Some reference links:
+	 * http://artscene.textfiles.com/ansimusic/
+	 * http://artscene.textfiles.com/ansimusic/information/ansimtech.txt
+	 * http://artscene.textfiles.com/ansimusic/information/dybczak.txt
+	 * https://en.wikipedia.org/wiki/Music_Macro_Language
+	 * https://web.archive.org/web/20071016103140/http://antonis.de:80/qbebooks/gwbasman/
+	 * https://github.com/robhagemans/pcbasic/blob/master/pcbasic/basic/sound.py
+	 * https://github.com/freebsd/freebsd/blob/master/sys/dev/speaker/spkr.c
+	 */
 
 	/**
 	 * Create instance of the ANSI protocol handler.
@@ -113,6 +125,24 @@ public class ANSI extends PlainText {
 	 */
 	@Override
 	public void print(char ch) {
+		if (inANSIMusic) {
+			// Music sequence ends at 0x0e.
+			// We'll end the music sequence on anything <0x20, just to put a bound in case ending is missing.
+			if (ch < 0x20) {
+				inANSIMusic = false;
+				// TODO: music sequence ended, send it to the player
+				music.setLength(0);
+				if (ch == 0x0e) {
+					// swallow a sequence-ending 0x0e.
+					// anything else will fall through to be parsed for ANSI.
+					return;
+				}
+			} else {
+				// collect the music sequence
+				music.append(ch);
+				return;
+			}
+		}
 		parser.parse(ch);
 	}
 	
@@ -144,6 +174,11 @@ public class ANSI extends PlainText {
 				break;
 			case K:		// EL - Erase in Line
 				doEL(intermediateChars, params);
+				break;
+			case M:		// ANSI music start
+				inANSIMusic = true;
+				music.setLength(0);
+				music.append('M');
 				break;
 			case m:		// SGR - Select Graphic Rendition
 				doSGR(intermediateChars, params);
@@ -476,9 +511,8 @@ public class ANSI extends PlainText {
 	}
 
 	private void doExecute(char ch) {
-		// Unless we have some reason to specially handle a control character here,
-		// just pass it through to the base class.
-		super.print(ch);
+		// Unless we have some reason to specially handle a control character here, just print it.
+		doPrint(ch);
 	}
 
 	private void doPrint(char ch) {
