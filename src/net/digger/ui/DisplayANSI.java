@@ -7,6 +7,7 @@ import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
+import java.util.HashMap;
 import java.util.Map;
 import java.util.TreeMap;
 
@@ -45,6 +46,7 @@ import net.digger.util.Delay;
  * @author walton
  */
 public class DisplayANSI {
+	private static final int DEFAULT_BPS = 9600;
 	@SuppressWarnings("serial")
 	private static final Map<Integer, String> SPEEDS = new TreeMap<Integer, String>() {{
 		put(110, "110 baud Bell 101");
@@ -65,7 +67,7 @@ public class DisplayANSI {
 		put(Integer.MAX_VALUE, "Unlimited");
 	}};
 	private JScreen screen;
-	private int bps = 9600;
+	private int bps;
 	private Path file;
 	private static boolean restart = true;
 	
@@ -74,17 +76,24 @@ public class DisplayANSI {
 			System.out.println();
 			System.out.println("DisplayANSI, a simple ANSI art viewer.");
 			System.out.println("Usage:");
-			System.out.println("\tjava -jar DisplayANSI.jar <filename>");
+			System.out.println("\tjava -jar DisplayANSI.jar <filename> <bps>");
 			System.out.println("Right-click the screen for options.");
 			System.out.println();
 			return;
 		}
-		
-		DisplayANSI ansi = new DisplayANSI();
+
+		DisplayANSI ansi;
+		if (args.length > 1) {
+			ansi = new DisplayANSI(Integer.parseInt(args[1]));
+		} else {
+			ansi = new DisplayANSI();
+		}
 		ansi.setFile(args[0]);
 		while (true) {
 			if (restart) {
-				ansi.display();
+				if (ansi.display()) {
+					break;
+				}
 			}
 			if (ansi.checkEscape()) {
 				break;
@@ -94,6 +103,11 @@ public class DisplayANSI {
 	}
 	
 	public DisplayANSI() {
+		this(DEFAULT_BPS);
+	}
+	
+	public DisplayANSI(int speed) {
+		bps = speed;
 		screen = JScreen.createJScreenWindow("DisplayANSI (right-click for options)", PCScreenMode.VGA_80x25);
 		screen.setTextProtocol(new ANSI(screen));
 		screen.hideCursor();
@@ -110,10 +124,10 @@ public class DisplayANSI {
 		JMenu speedMenu = new JMenu("Modem Speed");
 		menu.add(speedMenu);
 		ButtonGroup group = new ButtonGroup();
-		for (int speed : SPEEDS.keySet()) {
-			JRadioButtonMenuItem item = new JRadioButtonMenuItem(SPEEDS.get(speed));
-			item.setSelected(bps == speed);
-			item.setActionCommand(String.valueOf(speed));
+		for (int newspeed : SPEEDS.keySet()) {
+			JRadioButtonMenuItem item = new JRadioButtonMenuItem(SPEEDS.get(newspeed));
+			item.setSelected(bps == newspeed);
+			item.setActionCommand(String.valueOf(newspeed));
 			group.add(item);
 			speedMenu.add(item);
 			item.addActionListener(new ActionListener() {
@@ -148,7 +162,7 @@ public class DisplayANSI {
 		this.file = path;
 	}
 	
-	public void display() throws IOException {
+	public boolean display() throws IOException {
 		restart = false;
 		int oldbps = bps;
 		int wait = (int)(1000000 / (bps / 8.0));
@@ -164,8 +178,12 @@ public class DisplayANSI {
 			Delay.micro(wait);
 			if (restart) {
 				screen.printlnBPS(bps);
-				return;
+				return false;
+			}
+			if (checkEscape()) {
+				return true;
 			}
 		}
+		return false;
 	}
 }

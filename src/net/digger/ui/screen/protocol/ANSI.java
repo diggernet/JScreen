@@ -11,7 +11,9 @@ import org.apache.commons.lang3.StringUtils;
 import net.digger.ui.screen.JScreen;
 import net.digger.ui.screen.color.Attr;
 import net.digger.ui.screen.color.CGAColor;
+import net.digger.util.VTEmulator;
 import net.digger.util.VTParser;
+import net.digger.util.VTParserTables.Action;
 
 /**
  * Copyright © 2017  David Walton
@@ -40,7 +42,7 @@ import net.digger.util.VTParser;
  * http://vt100.net/emu/dec_ansi_parser
  * @author walton
  */
-public class ANSI extends PlainText {
+public class ANSI extends PlainText implements VTEmulator {
 	// The escape character
 	private static final char ESCAPE = 27;
 	// Implemented ANSI escape sequence letters
@@ -88,35 +90,7 @@ public class ANSI extends PlainText {
 	public ANSI(JScreen screen, Consumer<String> dsrCallback) {
 		super(screen);
 		this.dsrCallback = dsrCallback;
-		parser = new VTParser((action, ch, intermediateChars, params) -> {
-			switch (action) {
-				case CSI_DISPATCH:
-					doCSI(ch, intermediateChars, params);
-					break;
-				case ESC_DISPATCH:
-					doEscape(ch, intermediateChars, params);
-					break;
-				case EXECUTE:
-					doExecute(ch);
-					break;
-				case PRINT:
-					doPrint(ch);
-					break;
-				case DCS_HOOK:
-				case DCS_PUT:
-				case DCS_UNHOOK:
-				case OSC_END:
-				case OSC_PUT:
-				case OSC_START:
-				case ERROR:
-				default:
-					System.out.printf("ANSI: Unimplemented Parser Action: %s", action);
-					if (ch != 0) {
-						System.out.printf(", Char: 0x%02x ('%c')\n", (int)ch, ch);
-					}
-					break;
-			}
-		});
+		parser = new VTParser(this, true);
 	}
 	
 	/**
@@ -129,8 +103,9 @@ public class ANSI extends PlainText {
 			// Music sequence ends at 0x0e.
 			// We'll end the music sequence on anything <0x20, just to put a bound in case ending is missing.
 			if (ch < 0x20) {
+				// music sequence ended
 				inANSIMusic = false;
-				// TODO: music sequence ended, send it to the player
+				// TODO: send sequence to the player
 				music.setLength(0);
 				if (ch == 0x0e) {
 					// swallow a sequence-ending 0x0e.
@@ -146,7 +121,8 @@ public class ANSI extends PlainText {
 		parser.parse(ch);
 	}
 	
-	private void doCSI(char ch, List<Character> intermediateChars, List<Integer> params) {
+	@Override
+	public void actionCSIDispatch(char ch, List<Character> intermediateChars, List<Integer> params) {
 		ControlSequence ctrlseq = EnumUtils.getEnum(ControlSequence.class, String.valueOf(ch));
 		if ((ctrlseq == null) || (intermediateChars.size() > 0)) {
 			System.out.println("ANSI: Unimplemented Control Sequence: Esc[" + StringUtils.join(intermediateChars, null) + StringUtils.join(params, ';') + ch);
@@ -461,7 +437,8 @@ public class ANSI extends PlainText {
 		}
 	}
 	
-	private void doEscape(char ch, List<Character> intermediateChars, List<Integer> params) {
+	@Override
+	public void actionEscapeDispatch(char ch, List<Character> intermediateChars) {
 		EscapeSequence escseq = EnumUtils.getEnum(EscapeSequence.class, String.valueOf(ch));
 		if ((escseq == null) || (intermediateChars.size() > 0)) {
 			System.out.println("ANSI: Unimplemented Escape Sequence: Esc" + StringUtils.join(intermediateChars, null) + ch);
@@ -469,18 +446,18 @@ public class ANSI extends PlainText {
 		}
 		switch (escseq) {
 			case D:		// IND - Index
-				doIND(intermediateChars, params);
+				doIND();
 				break;
 			case E:		// NEL - NExt Line
-				doNEL(intermediateChars, params);
+				doNEL();
 				break;
 			case M:		// RI - Reverse Index
-				doRI(intermediateChars, params);
+				doRI();
 				break;
 		}
 	}
 	
-	private void doIND(List<Character> intermediateChars, List<Integer> params) {
+	private void doIND() {
 		insideMargin(() -> {
 			Point coord = screen.getCursor();
 			Rectangle window = screen.getWindow();
@@ -492,14 +469,14 @@ public class ANSI extends PlainText {
 		});
 	}
 
-	private void doNEL(List<Character> intermediateChars, List<Integer> params) {
+	private void doNEL() {
 		insideMargin(() -> {
 			super.print('\r');
 			super.print('\n');
 		});
 	}
 
-	private void doRI(List<Character> intermediateChars, List<Integer> params) {
+	private void doRI() {
 		insideMargin(() -> {
 			Point coord = screen.getCursor();
 			if (coord.y > 0) {
@@ -510,15 +487,68 @@ public class ANSI extends PlainText {
 		});
 	}
 
-	private void doExecute(char ch) {
+	@Override
+	public void actionExecute(char ch) {
 		// Unless we have some reason to specially handle a control character here, just print it.
-		doPrint(ch);
+		actionPrint(ch);
 	}
 
-	private void doPrint(char ch) {
+	@Override
+	public void actionPrint(char ch) {
 		insideMargin(() -> {
 			super.print(ch);
 		});
+	}
+
+	@Override
+	public void actionDCSHook(char ch, List<Character> intermediateChars, List<Integer> params) {
+		printAction(Action.DCS_HOOK, ch, intermediateChars, params);
+	};
+	@Override
+	public void actionDCSPut(char ch) {
+		printAction(Action.DCS_PUT, ch, null, null);
+	};
+	@Override
+	public void actionDCSUnhook() {
+		printAction(Action.DCS_UNHOOK, null, null, null);
+	};
+	@Override
+	public void actionError() {
+		printAction(Action.ERROR, null, null, null);
+	};
+	@Override
+	public void actionOSCEnd() {
+		printAction(Action.OSC_END, null, null, null);
+	};
+	@Override
+	public void actionOSCPut(char ch) {
+		printAction(Action.OSC_PUT, ch, null, null);
+	};
+	@Override
+	public void actionOSCStart() {
+		printAction(Action.OSC_START, null, null, null);
+	};
+	
+	private void printAction(Action action, Character ch, List<Character> intermediateChars, List<Integer> params) {
+		System.out.printf("ANSI: Unimplemented Parser Action %s", action);
+		if ((ch != null) && (ch != 0)) {
+			System.out.printf(", Char: 0x%02x ('%c')\n", (int)ch, ch);
+		}
+		if ((intermediateChars != null) && !intermediateChars.isEmpty()) {
+			System.out.printf("\t%d Intermediate chars: ", intermediateChars.size());
+			for (Character intch : intermediateChars) {
+				System.out.printf("0x%02x ('%c'), ", (int)intch, intch);
+			}
+			System.out.println();
+		}
+		if ((params != null) && !params.isEmpty()) {
+			System.out.printf("\t%d Parameters: ", params.size());
+			for (Integer param : params) {
+				System.out.printf("%d, ", param);
+			}
+			System.out.println();
+		}
+		System.out.println();
 	}
 
 
