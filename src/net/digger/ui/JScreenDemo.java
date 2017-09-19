@@ -11,7 +11,7 @@ import net.digger.ui.screen.color.CGAColor;
 import net.digger.ui.screen.font.PCFont;
 import net.digger.ui.screen.mode.PCScreenMode;
 import net.digger.ui.screen.protocol.ANSI;
-import net.digger.util.Delay;
+import net.digger.util.Pause;
 
 /**
  * Copyright © 2017  David Walton
@@ -68,37 +68,37 @@ public class JScreenDemo {
 			"DOS programs to a modern cross-platform environment, while",
 			"retaining their original look and feel."
 		);
-		Delay.second(2);
+		Pause.second(2);
 
 		writeTextWin(
 			"JScreen can create its own window, as we have done here.",
 			"Or it can be embedded as a component in your UI, using",
 			"whatever screen dimensions you wish."
 		);
-		Delay.second(2);
+		Pause.second(2);
 
 		writeTextWin(
 			"With JScreen, you can create output windows in the screen,",
 			"such as the one this text is in.  You can also frame those",
 			"windows."
 		);
-		Delay.second(1);
+		Pause.second(1);
 
 		inDemoWin(() -> {
 			screen.frameWindow(null, PCFont.DOUBLE_FRAME);
 		});
-		Delay.second(2);
+		Pause.second(2);
 
 		writeTextWin(
 			"And put a title on the frame."
 		);
-		Delay.second(1);
+		Pause.second(1);
 
 		inDemoWin(() -> {
 			screen.unframeWindow();
 			screen.frameWindow("This is a title", PCFont.DOUBLE_FRAME_SPACE);
 		});
-		Delay.second(2);
+		Pause.second(2);
 
 		writeTextWin(
 			"JScreen comes with fonts and character mapping to imitate",
@@ -106,7 +106,7 @@ public class JScreenDemo {
 			"designed to enable emulating non-PC text modes, given",
 			"suitable fonts and character mapping."
 		);
-		Delay.second(1);
+		Pause.second(1);
 
 		inDemoWin(() -> {
 			for (int i=0; i<8; i++) {
@@ -117,12 +117,12 @@ public class JScreenDemo {
 			}
 			screen.println();
 		});
-		Delay.second(2);
+		Pause.second(2);
 
 		writeTextWin(
 			"Naturally, you can also use colors..."
 		);
-		Delay.second(1);
+		Pause.second(1);
 
 		inDemoWin(() -> {
 			screen.setTextColors(CGAColor.BLUE, CGAColor.BLACK);
@@ -177,7 +177,7 @@ public class JScreenDemo {
 			screen.println();
 			screen.println();
 		});
-		Delay.second(2);
+		Pause.second(2);
 
 		writeTextWin(
 			"And, of course..."
@@ -186,7 +186,7 @@ public class JScreenDemo {
 		screen.print("        BLINK");
 		screen.setTextAttr(Attr.BLINKING, false);
 		screen.println();
-		Delay.second(2);
+		Pause.second(2);
 
 		String ansi = "\u001b[1;30mA\u001b[31mN\u001b[32mS\u001b[33mI\u001b[5;34m!\u001b[25;35m!\u001b[36m!\u001b[37m!";
 		writeTextWin(
@@ -197,13 +197,13 @@ public class JScreenDemo {
 		screen.putStr(ansi);
 		screen.println();
 		textWinSave = screen.saveWindowState();
-		Delay.second(1);
+		Pause.second(1);
 
 		inDemoWin(() -> {
 			screen.resetTextColors();
 			screen.println(ansi);
 		});
-		Delay.second(2);
+		Pause.second(2);
 
 		writeTextWin(
 			"JScreen implements blocking keyboard input, so you can",
@@ -234,7 +234,7 @@ public class JScreenDemo {
 		writeTextWin(
 			"Thank you, " + name + "."
 		);
-		Delay.second(2);
+		Pause.second(2);
 		
 		writeTextWin(
 			"With JScreen, you can save the contents of the screen,",
@@ -242,53 +242,53 @@ public class JScreenDemo {
 			"We'll grab a snapshot of the window below before moving",
 			"on..."
 		);
-		Delay.second(1);
+		Pause.second(1);
 		screen.restoreWindowState(demoWinSave);
 		JScreenRegion save = screen.readWindow();
-		Delay.second(1);
+		Pause.second(1);
 		
 		writeTextWin(
 			"JScreen allows you to fill the screen, a window, or any",
 			"arbitrary region."
 		);
-		Delay.second(1);
+		Pause.second(1);
 
 		inDemoWin(() -> {
 			screen.fillWindow('*', CGAColor.RED, CGAColor.BLUE);
-			Delay.second(1);
+			Pause.second(1);
 			screen.fillRegion(new Rectangle(15, 5, 20, 5), '#', CGAColor.GREEN, CGAColor.BLACK);
 		});
-		Delay.second(2);
+		Pause.second(2);
 
 		writeTextWin(
 			"And also scroll the screen, a window, or any",
 			"arbitrary region."
 		);
-		Delay.second(1);
+		Pause.second(1);
 
 		inDemoWin(() -> {
 			int delay = 250;
 			Rectangle region = new Rectangle(5, 1, 20, 6);
-			Delay.milli(delay);
+			Pause.milli(delay);
 			screen.scrollRegionUp(region);
-			Delay.milli(delay);
+			Pause.milli(delay);
 			screen.scrollRegionUp(region);
-			Delay.milli(delay);
+			Pause.milli(delay);
 			screen.scrollRegionUp(region);
-			Delay.milli(delay);
+			Pause.milli(delay);
 			screen.scrollRegionUp(region);
-			Delay.milli(delay);
+			Pause.milli(delay);
 			screen.scrollRegionUp(region);
-			Delay.milli(delay);
+			Pause.milli(delay);
 		});
-		Delay.second(2);
+		Pause.second(2);
 
 		writeTextWin(
 			"But how fast is JScreen, you ask?",
 			"Let's fill that window with random characters and colors,",
 			"10,000 times."
 		);
-		Delay.second(1);
+		Pause.second(1);
 
 		inDemoWin(() -> {
 			for (int i=0; i<10000; i++) {
@@ -302,18 +302,18 @@ public class JScreenDemo {
 				}
 			}
 		});
-		Delay.second(2);
+		Pause.second(2);
 
 		writeTextWin(
 			"Fast enough for you?",
 			"Now we'll restore the window contents we saved earlier."
 		);
-		Delay.second(1);
+		Pause.second(1);
 		
 		inDemoWin(() -> {
 			screen.writeWindow(save);
 		});
-		Delay.second(1);
+		Pause.second(1);
 
 		writeTextWin(
 			"That concludes our demo for now, but there is more JScreen",
@@ -322,7 +322,7 @@ public class JScreenDemo {
 			"Or maybe it isn't.  That's cool, too.",
 			"Thanks for watching!"
 		);
-		Delay.second(2);
+		Pause.second(2);
 
 	}
 	

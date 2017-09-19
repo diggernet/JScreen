@@ -22,7 +22,7 @@ import javax.swing.SwingUtilities;
 import net.digger.ui.screen.JScreen;
 import net.digger.ui.screen.mode.PCScreenMode;
 import net.digger.ui.screen.protocol.ANSI;
-import net.digger.util.Delay;
+import net.digger.util.Pause;
 
 /**
  * Copyright © 2017  David Walton
@@ -98,7 +98,7 @@ public class DisplayANSI {
 			if (ansi.checkEscape()) {
 				break;
 			}
-			Delay.milli(500);
+			Pause.milli(500);
 		}
 	}
 	
@@ -175,7 +175,7 @@ public class DisplayANSI {
 				System.out.println("Wait: " + wait);
 			}
 			screen.print(ch);
-			Delay.micro(wait);
+			Pause.micro(wait);
 			if (restart) {
 				screen.printlnBPS(bps);
 				return false;

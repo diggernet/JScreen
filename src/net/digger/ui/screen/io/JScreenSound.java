@@ -2,7 +2,7 @@ package net.digger.ui.screen.io;
 
 import java.awt.Toolkit;
 
-import net.digger.util.Delay;
+import net.digger.util.Pause;
 
 /**
  * Copyright © 2017  David Walton
@@ -51,7 +51,7 @@ public class JScreenSound {
 	public void play(int hz, int ms) {
 		if (!mute) {
 			play(hz);
-			Delay.milli(ms);
+			Pause.milli(ms);
 			stop();
 		}
 	}

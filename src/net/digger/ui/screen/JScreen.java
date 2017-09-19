@@ -45,7 +45,7 @@ import net.digger.ui.screen.io.JScreenSound;
 import net.digger.ui.screen.mode.JScreenMode;
 import net.digger.ui.screen.protocol.PlainText;
 import net.digger.ui.screen.protocol.JScreenTextProtocol;
-import net.digger.util.Delay;
+import net.digger.util.Pause;
 
 /**
  * Copyright © 2017  David Walton
@@ -1554,7 +1554,7 @@ public class JScreen implements Closeable {
 		int wait = (int)(1000000 / (bps / 8.0));
 		for (int i=0; i<str.length(); i++) {
 			print(str.charAt(i));
-			Delay.micro(wait);
+			Pause.micro(wait);
 		}
 	}
 
