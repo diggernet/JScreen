@@ -26,7 +26,7 @@ And, of course, the source is available to learn every nuance.
 * [Java 8](https://www.oracle.com/java)
 * [Apache Commons Lang](https://commons.apache.org/proper/commons-lang)
 * [Apache Commons Collections](https://commons.apache.org/proper/commons-collections)
-* [net.digger.util.Delay](https://gitlab.com/diggernet/JavaUtils)
+* [net.digger.util.Pause](https://github.com/diggernet/JavaUtils)
 
 ## License
 JScreen is provided under the terms of the GNU LGPLv3.
