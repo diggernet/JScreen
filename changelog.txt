@@ -1,0 +1,19 @@
+
+18 Nov 2017 - v1.1
+- Add methods for selecting region of screen.
+- Add ability to select screen text with mouse.
+- Add method to copy selected region to clipboard.
+- Add method to test if key buffer is enabled.
+- Add method to inject KeyEvent to key buffer.
+- Add method to send text to key buffer.
+- Add method to paste from clipboard to key buffer.
+- Add optional pre-title and post-title chars to frame char array.
+- Add DECSTBM, DSR, IND, NEL, RI support to ANSI protocol.
+- Fixes for CUU, CUD, CUP, HVP support in ANSI protocol.
+- Fix bug where last parameter in ANSI sequence was lost.
+- Rewrite ANSI protocol using VTParser.
+- ANSI protocol recognizes and ignores music (MML) sequences.
+
+
+02 May 2017 - v1.0
+- Initial release.

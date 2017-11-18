@@ -8,10 +8,16 @@ import java.awt.GraphicsEnvironment;
 import java.awt.Point;
 import java.awt.Rectangle;
 import java.awt.Toolkit;
+import java.awt.datatransfer.Clipboard;
+import java.awt.datatransfer.StringSelection;
 import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
+import java.awt.event.MouseAdapter;
+import java.awt.event.MouseEvent;
+import java.awt.event.MouseMotionAdapter;
 import java.io.Closeable;
+import java.util.ArrayList;
 import java.util.EnumSet;
+import java.util.List;
 import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.ScheduledThreadPoolExecutor;
 import java.util.concurrent.TimeUnit;
@@ -39,7 +45,7 @@ import net.digger.ui.screen.io.JScreenSound;
 import net.digger.ui.screen.mode.JScreenMode;
 import net.digger.ui.screen.protocol.PlainText;
 import net.digger.ui.screen.protocol.JScreenTextProtocol;
-import net.digger.util.Delay;
+import net.digger.util.Pause;
 
 /**
  * Copyright © 2017  David Walton
@@ -65,7 +71,8 @@ import net.digger.util.Delay;
  * @author walton
  */
 public class JScreen implements Closeable {
-	private static final String VERSION = "1.0";
+	private static final String VERSION = "1.1";
+	private static final String COPYRIGHT = "\u00A92017";
 	// default values
 	private static final String DEFAULT_WINDOW_TITLE = "JScreen";
 	private static final JScreenMode DEFAULT_SCREEN_MODE = JScreenMode.DEFAULT_MODE;
@@ -125,6 +132,8 @@ public class JScreen implements Closeable {
 	private ScheduledThreadPoolExecutor scheduler = null;
 	private boolean blinkingChars = false;
 	private boolean blinked = false;
+	private Point selectionStarted = null;
+	private Rectangle selection = null;
 	
 	// key event handler
 	public final JScreenKeyboard keyboard;
@@ -169,9 +178,42 @@ public class JScreen implements Closeable {
 		keyboard = new JScreenKeyboard(this);
 		sound = new JScreenSound();
 		
-//TODO: Implement select and copy?
-//		screen.addMouseListener(new MouseAdapter() {});
-//		screen.addMouseListener(new MouseListener() {});
+		screen.addMouseListener(new MouseAdapter() {
+			@Override
+			public void mouseClicked(MouseEvent e) {
+				selectionStarted = null;
+				Rectangle oldSelection = selection;
+				selection = null;
+				if (oldSelection != null) {
+					screen.repaint(regionPixels(oldSelection));
+				}
+			}
+
+			@Override
+			public void mousePressed(MouseEvent e) {
+				selectionStarted = findCell(e.getPoint());
+			}
+
+			@Override
+			public void mouseReleased(MouseEvent e) {
+				selectionStarted = null;
+			}
+		});
+		
+		screen.addMouseMotionListener(new MouseMotionAdapter() {
+			@Override
+			public void mouseDragged(MouseEvent e) {
+				if (selectionStarted != null) {
+					Point cell = findCell(e.getPoint());
+					selectCells(new Rectangle(
+							Math.min(selectionStarted.x, cell.x),
+							Math.min(selectionStarted.y, cell.y),
+							Math.abs(cell.x - selectionStarted.x) + 1,
+							Math.abs(cell.y - selectionStarted.y) + 1)
+					);
+				}
+			}
+		});
 		
 		// right-click context menu
 		menu = new JPopupMenu();
@@ -179,7 +221,21 @@ public class JScreen implements Closeable {
 		if (copyright != null) {
 			menu.add(new JMenuItem(copyright));
 		}
-		menu.add(new JMenuItem("JScreen v" + VERSION + " \u00A92017 by David Walton"));
+		menu.add(new JMenuItem("JScreen v" + VERSION + " " + COPYRIGHT + " by David Walton"));
+		
+		JMenuItem copy = new JMenuItem("Copy selection text to clipboard");
+		menu.add(copy);
+		copy.addActionListener((ActionEvent e) -> {
+			copySelectionToClipboard();
+		});
+		JMenuItem paste = new JMenuItem("Paste text to keyboard buffer");
+		menu.add(paste);
+		paste.addActionListener((ActionEvent e) -> {
+			if (keyboard != null) {
+				keyboard.pasteClipboard();
+			}
+		});
+		
 		fontMenu = new JMenu("Fonts");
 		menu.add(fontMenu);
 		addFontMenus();
@@ -207,34 +263,31 @@ public class JScreen implements Closeable {
 		if (cursorBlinker != null) {
 			cursorBlinker.cancel(false);
 		}
-		cursorBlinker = scheduler.scheduleAtFixedRate(new Runnable() {
-			@Override
-			public void run() {
-				// toggle the state of the blink
-				blinked = !blinked;
-				if (blinkingChars) {
-					boolean found = false;
-					for (int y=0; y<screenCells.height; y++) {
-						for (int x=0; x<screenCells.width; x++) {
-							JScreenCell cell = cells[y][x];
-							if (cell.attrs.contains(Attr.BLINKING)) {
-								found = true;
-								cell.setAttr(Attr.IS_BLINKED, blinked);
-								screen.repaint(cellPixels(x, y));
-							}
+		cursorBlinker = scheduler.scheduleAtFixedRate(() -> {
+			// toggle the state of the blink
+			blinked = !blinked;
+			if (blinkingChars) {
+				boolean found = false;
+				for (int y=0; y<screenCells.height; y++) {
+					for (int x=0; x<screenCells.width; x++) {
+						JScreenCell cell = cells[y][x];
+						if (cell.attrs.contains(Attr.BLINKING)) {
+							found = true;
+							cell.setAttr(Attr._IS_BLINKED, blinked);
+							screen.repaint(cellPixels(x, y));
 						}
 					}
-					if (!found) {
-						// if no blinking chars found, stop checking
-						// anywhere that updates a cell to blink needs to turn this on
-						blinkingChars = false;
-					}
 				}
-				if (cursorVisible && cursorBlink) {
-					JScreenCell cell = cells[cursor.y][cursor.x];
-					cell.setAttr(Attr.IS_BLINKED, blinked);
-					screen.repaint(cellPixels(cursor));
+				if (!found) {
+					// if no blinking chars found, stop checking
+					// anywhere that updates a cell to blink needs to turn this on
+					blinkingChars = false;
 				}
+			}
+			if (cursorVisible && cursorBlink) {
+				JScreenCell cell = cells[cursor.y][cursor.x];
+				cell.setAttr(Attr._IS_BLINKED, blinked);
+				screen.repaint(cellPixels(cursor));
 			}
 		}, 0, (int)(1000 / blinkRate), TimeUnit.MILLISECONDS);
 	}
@@ -291,16 +344,14 @@ public class JScreen implements Closeable {
 	 */
 	public static JScreen createJScreenWindow(String title, JScreenMode mode, String copyright) {
 		JScreen screen = new JScreen(mode, copyright);
-		SwingUtilities.invokeLater(new Runnable() {
-			public void run() {
-				JFrame frame = new JFrame(title);
-				frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-				frame.setLayout(new BorderLayout());
-				frame.setResizable(false);
-				frame.add(screen.getComponent(), BorderLayout.CENTER);
-				frame.pack();
-				frame.setVisible(true);
-			}
+		SwingUtilities.invokeLater(() -> {
+			JFrame frame = new JFrame(title);
+			frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+			frame.setLayout(new BorderLayout());
+			frame.setResizable(false);
+			frame.add(screen.getComponent(), BorderLayout.CENTER);
+			frame.pack();
+			frame.setVisible(true);
 		});
 		return screen;
 	}
@@ -597,7 +648,7 @@ public class JScreen implements Closeable {
 	 */
 	public void setTextScreenSize(Dimension size) {
 		screenCells = new Rectangle(size);
-		System.out.println("Screen size: " + screenCells.getSize());
+//		System.out.println("Screen size: " + screenCells.getSize());
 		window = new Rectangle(screenCells);
 		cells = JScreenRegion.createCellGrid(screenCells.getSize());
 		setFontScale();
@@ -711,7 +762,7 @@ public class JScreen implements Closeable {
 		fontScale = scale;
 		cellSize = fonts[0].getCellSize(fontScale);
 		screenPixels = new Rectangle(screenCells.width * cellSize.width, screenCells.height * cellSize.height);
-		System.out.println("Screen pixels: " + screenPixels);
+//		System.out.println("Screen pixels: " + screenPixels);
 		addFontScaleMenus();
 		setPreferredSize();
 	}
@@ -971,6 +1022,11 @@ public class JScreen implements Closeable {
 	 * If the framing would result in the cursor being outside the window,
 	 * the cursor is moved to 0,0 in the new window.
 	 * Otherwise, cursor position relative to the whole screen stays the same.
+	 * Frame characters is an array of characters used to draw the frame, in this order:
+	 * Upper left corner, top, upper right corner, left side, right side,
+	 * lower left corner, bottom, lower right corner.
+	 * The frame character array can optionally have two additional characters to bracket the title:
+	 * Before title, after title.
 	 * @param title Title string.
 	 * @param frame Characters to use to draw the frame.
 	 */
@@ -986,6 +1042,11 @@ public class JScreen implements Closeable {
 	 * If the framing would result in the cursor being outside the window,
 	 * the cursor is moved to 0,0 in the new window.
 	 * Otherwise, cursor position relative to the whole screen stays the same.
+	 * Frame characters is an array of characters used to draw the frame, in this order:
+	 * Upper left corner, top, upper right corner, left side, right side,
+	 * lower left corner, bottom, lower right corner.
+	 * The frame character array can optionally have two additional characters to bracket the title:
+	 * Before title, after title.
 	 * @param title Title string.  If null, no title is displayed.
 	 * @param frame Characters to use to draw the frame.  If null, no frame is drawn.
 	 * @param frameFG Window frame foreground color.
@@ -1017,9 +1078,17 @@ public class JScreen implements Closeable {
 		}
 		// title
 		if (title != null) {
-			title = StringUtils.substring(title, 0, window.width - 2);
-			coord.x = (window.width - title.length()) / 2;
-			putStr(coord, title);
+			if ((frame != null) && (frame.length > 9)) {
+				title = StringUtils.substring(title, 0, window.width - 4);
+				coord.x = (window.width - title.length()) / 2;
+				putChar(coord.x - 1, coord.y, frame[8], frameFG, frameBG, frameAttrs);
+				putStr(coord, title);
+				putChar(coord.x + title.length(), coord.y, frame[9], frameFG, frameBG, frameAttrs);
+			} else {
+				title = StringUtils.substring(title, 0, window.width - 2);
+				coord.x = (window.width - title.length()) / 2;
+				putStr(coord, title);
+			}
 		}
 		
 		if (frame != null) {
@@ -1485,7 +1554,7 @@ public class JScreen implements Closeable {
 		int wait = (int)(1000000 / (bps / 8.0));
 		for (int i=0; i<str.length(); i++) {
 			print(str.charAt(i));
-			Delay.micro(wait);
+			Pause.micro(wait);
 		}
 	}
 
@@ -1914,6 +1983,65 @@ public class JScreen implements Closeable {
 		screen.repaint(regionPixels(region));
 	}
 	
+	// ##### Screen region selection methods #####
+	
+	/**
+	 * Select the text in the whole screen.
+	 */
+	public void selectScreen() {
+		selectCells(screenCells);
+	}
+	
+	/**
+	 * Select the text in the current text window.
+	 */
+	public void selectWindow() {
+		selectCells(window);
+	}
+	
+	/**
+	 * Select the text in the given window-relative region.
+	 * @param region
+	 */
+	public void selectRegion(Rectangle region) {
+		selectCells(windowRegionToScreen(region));
+	}
+
+	/**
+	 * Select the text in the given screen-relative region.
+	 * @param region
+	 */
+	private void selectCells(Rectangle region) {
+		Point ul = new Point(Math.max(screenCells.x, region.x), Math.max(screenCells.y, region.y));
+		Point lr = new Point(Math.min(screenCells.width, region.x + region.width),
+				Math.min(screenCells.height, region.y + region.height));
+		Rectangle oldSelection = selection;
+		selection = new Rectangle(ul.x, ul.y, lr.x - ul.x, lr.y - ul.y);
+		if (oldSelection != null) {
+			screen.repaint(regionPixels(oldSelection));
+		}
+		screen.repaint(regionPixels(selection));
+	}
+	
+	/**
+	 * Copy the selected text to clipboard.
+	 */
+	public void copySelectionToClipboard() {
+		if (selection != null) {
+			List<String> text = new ArrayList<>();
+			StringBuilder sb = new StringBuilder();
+			for (int y=selection.y; y<(selection.y + selection.height); y++) {
+				sb.setLength(0);
+				for (int x=selection.x; x<(selection.x + selection.width); x++) {
+					sb.append(cells[y][x].ch);
+				}
+				text.add(sb.toString());
+			}
+			Clipboard clipboard = Toolkit.getDefaultToolkit().getSystemClipboard();
+			clipboard.setContents(new StringSelection(StringUtils.join(text, '\n')), null);
+		}
+	}
+
 	// ##### Miscellaneous methods #####
 	
 	/**
@@ -1951,7 +2079,13 @@ public class JScreen implements Closeable {
 				// if there is a font available...
 				if ((font >= 0) && (font < fonts.length)) {
 					// render the cell
-					fonts[font].drawChar(g, cellBounds, palette, cells[y][x], fontScale);
+					if ((selection != null) && selection.contains(x, y)) {
+						cells[y][x].setAttr(Attr._IS_SELECTED, true);
+						fonts[font].drawChar(g, cellBounds, palette, cells[y][x], fontScale);
+						cells[y][x].setAttr(Attr._IS_SELECTED, false);
+					} else {
+						fonts[font].drawChar(g, cellBounds, palette, cells[y][x], fontScale);
+					}
 				} else {
 					// otherwise, paint it BG color
 					Color bg = palette.getBG(cells[y][x]);
@@ -1959,7 +2093,7 @@ public class JScreen implements Closeable {
 					g.fillRect(cellBounds.x, cellBounds.y, cellBounds.width, cellBounds.height);
 				}
 				if ((cursorRenderer != null) && cursorVisible && (cursor.x == x) && (cursor.y == y) 
-						&& (!cursorBlink || !cells[y][x].attrs.contains(Attr.IS_BLINKED))) {
+						&& (!cursorBlink || !cells[y][x].attrs.contains(Attr._IS_BLINKED))) {
 					// draw the cursor, if it is enabled, in this cell, and not blinking or not currently blinked
 					cursorRenderer.drawCursor(g, cellBounds, palette.getFG(cells[y][x]), fontScale);
 				}
@@ -2111,7 +2245,7 @@ public class JScreen implements Closeable {
 	 */
 	private void checkCellInScreen(Point coord) {
 		if (!screenCells.contains(coord)) {
-			throw new IllegalArgumentException("Cell " + coord + " is off-screen.");
+			throw new IllegalArgumentException("Cell " + coord + " is off-screen (" + screenCells + ").");
 		}
 	}
 	
@@ -2121,7 +2255,7 @@ public class JScreen implements Closeable {
 	 */
 	private void checkCellInWindow(Point coord) {
 		if (!window.contains(coord)) {
-			throw new IllegalArgumentException("Cell " + coord + " is outside of current window.");
+			throw new IllegalArgumentException("Cell " + coord + " is outside of current window (" + window + ").");
 		}
 	}
 	
@@ -2131,7 +2265,7 @@ public class JScreen implements Closeable {
 	 */
 	private void checkRegionInScreen(Rectangle region) {
 		if (!screenCells.contains(region)) {
-			throw new IllegalArgumentException("Cell region " + region + " is not on-screen.");
+			throw new IllegalArgumentException("Cell region " + region + " is not on-screen (" + screenCells + ").");
 		}
 	}
 	
@@ -2141,7 +2275,7 @@ public class JScreen implements Closeable {
 	 */
 	private void checkRegionInWindow(Rectangle region) {
 		if (!window.contains(region)) {
-			throw new IllegalArgumentException("Cell region " + region + " is outside of current window.");
+			throw new IllegalArgumentException("Cell region " + region + " is outside of current window (" + window + ").");
 		}
 	}
 	
@@ -2151,7 +2285,7 @@ public class JScreen implements Closeable {
 	 */
 	private void checkPixelInScreen(Point pixel) {
 		if (!screenPixels.contains(pixel)) {
-			throw new IllegalArgumentException("Pixel " + pixel + " is not on-screen.");
+			throw new IllegalArgumentException("Pixel " + pixel + " is not on-screen (" + screenPixels + ").");
 		}
 	}
 
@@ -2178,11 +2312,8 @@ public class JScreen implements Closeable {
 				item.setActionCommand(String.valueOf(i));
 				group.add(item);
 				scaleMenu.add(item);
-				item.addActionListener(new ActionListener() {
-					@Override
-					public void actionPerformed(ActionEvent e) {
-						setFontScale(Integer.parseInt(e.getActionCommand()));
-					}
+				item.addActionListener((ActionEvent e) -> {
+					setFontScale(Integer.parseInt(e.getActionCommand()));
 				});
 			}
 		}

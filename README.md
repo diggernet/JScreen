@@ -23,8 +23,11 @@ And, of course, the source is available to learn every nuance.
 
 
 ## Dependencies
-* Java 8
-* [net.digger.util.Delay](https://gitlab.com/diggernet/JavaUtils)
+* [Java 8](https://www.oracle.com/java)
+* [net.digger.util.VTParser](https://github.com/diggernet/VTParser)
+* [net.digger.util.Pause](https://github.com/diggernet/JavaUtils)
+* [Apache Commons Lang](https://commons.apache.org/proper/commons-lang)
+* [Apache Commons Collections](https://commons.apache.org/proper/commons-collections)
 
 ## License
 JScreen is provided under the terms of the GNU LGPLv3.

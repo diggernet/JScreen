@@ -138,12 +138,12 @@ public class JScreenFont {
 		Dimension cellSize = sizes.get(scale);
 		if (cellSize == null) {
 			Rectangle2D cell = getCell(scale);
-			System.out.println("Cell: " + cell);
+//			System.out.println("Cell: " + cell);
 			cellSize = new Dimension();
 			cellSize.width = (int)Math.round(cell.getWidth() + 0.5);
 			cellSize.height = (int)Math.round(cell.getHeight() + 0.5);
 			sizes.put(scale, cellSize);
-			System.out.println("Cell size: " + cellSize + " (y offset " + getYOffset(scale) + ")");
+//			System.out.println("Cell size: " + cellSize + " (y offset " + getYOffset(scale) + ")");
 		}
 		return cellSize;
 	}
@@ -224,6 +224,11 @@ public class JScreenFont {
 	public void drawChar(Graphics g, Rectangle bounds, JScreenPalette palette, JScreenCell cell, int scale) {
 		Color fg = palette.getFG(cell);
 		Color bg = palette.getBG(cell);
+		if ((cell.attrs != null) && cell.attrs.contains(Attr._IS_SELECTED)) {
+			Color tmp = fg;
+			fg = bg;
+			bg = tmp;
+		}
 		g.setColor(bg);
 		g.fillRect(bounds.x, bounds.y, bounds.width, bounds.height);
 		if (FONT_DEBUG) {
@@ -233,7 +238,7 @@ public class JScreenFont {
 			g.drawRect(bounds.x, bounds.y, bounds.width - 1, bounds.height - 1);
 		}
 		// We only draw the character if it's not blinking, or it is blinking and is not currently blinked.
-		if (!cell.attrs.contains(Attr.BLINKING) || !cell.attrs.contains(Attr.IS_BLINKED)) {
+		if (!cell.attrs.contains(Attr.BLINKING) || !cell.attrs.contains(Attr._IS_BLINKED)) {
 			// Also, only if the foreground color is different from the background
 			if (!fg.equals(bg)) {
 				g.setFont(getFont(scale));

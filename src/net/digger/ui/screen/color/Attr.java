@@ -40,7 +40,12 @@ public enum Attr {
 	 * Blinking character is currently not visible (blinked off).
 	 * For internal use only.
 	 */
-	IS_BLINKED,
+	_IS_BLINKED,
+	/**
+	 * Character is currently selected.
+	 * For internal use only.
+	 */
+	_IS_SELECTED,
 	// Other attributes available for custom purposes
 	USER_1, USER_2, USER_3, USER_4, USER_5, USER_6, USER_7, USER_8, 
 }

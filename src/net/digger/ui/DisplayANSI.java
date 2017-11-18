@@ -2,24 +2,27 @@ package net.digger.ui;
 
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.awt.event.KeyEvent;
 import java.io.IOException;
-import java.nio.charset.Charset;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
+import java.util.HashMap;
 import java.util.Map;
 import java.util.TreeMap;
 
 import javax.swing.ButtonGroup;
+import javax.swing.JFrame;
 import javax.swing.JMenu;
 import javax.swing.JMenuItem;
 import javax.swing.JPopupMenu;
 import javax.swing.JRadioButtonMenuItem;
+import javax.swing.SwingUtilities;
 
 import net.digger.ui.screen.JScreen;
 import net.digger.ui.screen.mode.PCScreenMode;
 import net.digger.ui.screen.protocol.ANSI;
-import net.digger.util.Delay;
+import net.digger.util.Pause;
 
 /**
  * Copyright © 2017  David Walton
@@ -43,6 +46,7 @@ import net.digger.util.Delay;
  * @author walton
  */
 public class DisplayANSI {
+	private static final int DEFAULT_BPS = 9600;
 	@SuppressWarnings("serial")
 	private static final Map<Integer, String> SPEEDS = new TreeMap<Integer, String>() {{
 		put(110, "110 baud Bell 101");
@@ -63,7 +67,7 @@ public class DisplayANSI {
 		put(Integer.MAX_VALUE, "Unlimited");
 	}};
 	private JScreen screen;
-	private int bps = 9600;
+	private int bps;
 	private Path file;
 	private static boolean restart = true;
 	
@@ -72,25 +76,42 @@ public class DisplayANSI {
 			System.out.println();
 			System.out.println("DisplayANSI, a simple ANSI art viewer.");
 			System.out.println("Usage:");
-			System.out.println("\tjava -jar DisplayANSI.jar <filename>");
+			System.out.println("\tjava -jar DisplayANSI.jar <filename> <bps>");
 			System.out.println("Right-click the screen for options.");
 			System.out.println();
 			return;
 		}
-		
-		DisplayANSI ansi = new DisplayANSI();
+
+		DisplayANSI ansi;
+		if (args.length > 1) {
+			ansi = new DisplayANSI(Integer.parseInt(args[1]));
+		} else {
+			ansi = new DisplayANSI();
+		}
 		ansi.setFile(args[0]);
 		while (true) {
 			if (restart) {
-				ansi.display();
+				if (ansi.display()) {
+					break;
+				}
 			}
-			Delay.milli(500);
+			if (ansi.checkEscape()) {
+				break;
+			}
+			Pause.milli(500);
 		}
 	}
 	
 	public DisplayANSI() {
+		this(DEFAULT_BPS);
+	}
+	
+	public DisplayANSI(int speed) {
+		bps = speed;
 		screen = JScreen.createJScreenWindow("DisplayANSI (right-click for options)", PCScreenMode.VGA_80x25);
 		screen.setTextProtocol(new ANSI(screen));
+		screen.hideCursor();
+		screen.keyboard.enableKeyBuffer(true);
 		JPopupMenu menu = screen.getContextMenu();
 		JMenuItem reset = new JMenuItem("Restart");
 		menu.add(reset);
@@ -103,10 +124,10 @@ public class DisplayANSI {
 		JMenu speedMenu = new JMenu("Modem Speed");
 		menu.add(speedMenu);
 		ButtonGroup group = new ButtonGroup();
-		for (int speed : SPEEDS.keySet()) {
-			JRadioButtonMenuItem item = new JRadioButtonMenuItem(SPEEDS.get(speed));
-			item.setSelected(bps == speed);
-			item.setActionCommand(String.valueOf(speed));
+		for (int newspeed : SPEEDS.keySet()) {
+			JRadioButtonMenuItem item = new JRadioButtonMenuItem(SPEEDS.get(newspeed));
+			item.setSelected(bps == newspeed);
+			item.setActionCommand(String.valueOf(newspeed));
 			group.add(item);
 			speedMenu.add(item);
 			item.addActionListener(new ActionListener() {
@@ -117,6 +138,21 @@ public class DisplayANSI {
 			});
 		}
 	}
+	
+	public boolean checkEscape() {
+		while (screen.keyboard.isKeyEvent()) {
+			KeyEvent key = screen.keyboard.getKeyEvent();
+			if (key.getKeyChar() == KeyEvent.VK_ESCAPE) {
+				JFrame frame = (JFrame)SwingUtilities.getRoot(screen.getComponent());
+				if (frame != null) {
+					frame.dispose();
+				}
+				screen.close();
+				return true;
+			}
+		}
+		return false;
+	}
 
 	public void setFile(String file) {
 		Path path = Paths.get(file);
@@ -126,27 +162,28 @@ public class DisplayANSI {
 		this.file = path;
 	}
 	
-	public void display() throws IOException {
+	public boolean display() throws IOException {
 		restart = false;
 		int oldbps = bps;
 		int wait = (int)(1000000 / (bps / 8.0));
 		System.out.println("Wait: " + wait);
-		for (String line : Files.readAllLines(file, Charset.forName("CP437"))) {
-			screen.printlnBPS(bps);
-			// don't use screen.printBPS(line), so that we can change speed or restart in the middle of a line
-			for (int i=0; i<line.length(); i++) {
-				if (bps != oldbps) {
-					oldbps = bps;
-					wait = (int)(1000000 / (bps / 8.0));
-					System.out.println("Wait: " + wait);
-				}
-				screen.print(line.charAt(i));
-				Delay.micro(wait);
-				if (restart) {
-					screen.printlnBPS(bps);
-					return;
-				}
+		for (byte b : Files.readAllBytes(file)) {
+			char ch = (char)(b & 0xff);		// convert signed byte to unsigned char
+			if (bps != oldbps) {
+				oldbps = bps;
+				wait = (int)(1000000 / (bps / 8.0));
+				System.out.println("Wait: " + wait);
+			}
+			screen.print(ch);
+			Pause.micro(wait);
+			if (restart) {
+				screen.printlnBPS(bps);
+				return false;
+			}
+			if (checkEscape()) {
+				return true;
 			}
 		}
+		return false;
 	}
 }
