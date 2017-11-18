@@ -71,7 +71,7 @@ import net.digger.util.Pause;
  * @author walton
  */
 public class JScreen implements Closeable {
-	private static final String VERSION = "1.0";
+	private static final String VERSION = "1.1";
 	private static final String COPYRIGHT = "\u00A92017";
 	// default values
 	private static final String DEFAULT_WINDOW_TITLE = "JScreen";
