@@ -71,7 +71,7 @@ import net.digger.util.Pause;
  * @author walton
  */
 public class JScreen implements Closeable {
-	private static final String VERSION = "1.1";
+	private static final String VERSION = "1.2.0";
 	private static final String COPYRIGHT = "\u00A92017";
 	// default values
 	private static final String DEFAULT_WINDOW_TITLE = "JScreen";
@@ -102,6 +102,7 @@ public class JScreen implements Closeable {
 	private int fgColor;
 	private int bgColor;
 	private EnumSet<Attr> attrs = EnumSet.noneOf(Attr.class);
+	private ScrollFillMethod scrollFillMethod = ScrollFillMethod.DEFAULT;
 	
 	// screen font
 	private JScreenFont[] fonts;
@@ -141,6 +142,16 @@ public class JScreen implements Closeable {
 	// sound handler
 	public final JScreenSound sound;
 	
+	public enum ScrollFillMethod {
+		/**
+		 * Fill new cells with default colors.
+		 */
+		DEFAULT,
+		/**
+		 * Fill new cells with current colors.
+		 */
+		CURRENT,
+	};
 	
 	// ##### Constructors #####
 
@@ -181,12 +192,51 @@ public class JScreen implements Closeable {
 		screen.addMouseListener(new MouseAdapter() {
 			@Override
 			public void mouseClicked(MouseEvent e) {
-				selectionStarted = null;
-				Rectangle oldSelection = selection;
-				selection = null;
-				if (oldSelection != null) {
-					screen.repaint(regionPixels(oldSelection));
+				switch (e.getClickCount()) {
+					case 3:
+						doTripleClick(e);
+						break;
+					case 2:
+						doDoubleClick(e);
+						break;
+					default:
+						doClick(e);
+						break;
 				}
+			}
+			
+			private void doClick(MouseEvent e) {
+				selectionStarted = null;
+				clearSelection();
+			}
+			
+			private void doDoubleClick(MouseEvent e) {
+				Point clicked = findCell(e.getPoint());
+				int startX = clicked.x;
+				int endX = clicked.x;
+				int y = clicked.y;
+				boolean space = (getCellChar(startX, y) == ' ');
+				do {
+					startX--;
+				} while ((startX >= 0) && checkChar(getCellChar(startX, y), space));
+				startX++;
+				do {
+					endX++;
+				} while ((endX < screenCells.width) && checkChar(getCellChar(endX, y), space));
+				endX--;
+				selectCells(new Rectangle(startX, y, (endX - startX) + 1, 1));
+			}
+			
+			private void doTripleClick(MouseEvent e) {
+				Point clicked = findCell(e.getPoint());
+				int startX = 0;
+				int endX = screenCells.width - 1;
+				int y = clicked.y;
+				selectCells(new Rectangle(startX, y, (endX - startX) + 1, 1));
+			}
+			
+			private boolean checkChar(char ch, boolean space) {
+				return space ? (ch == ' ') : (ch != ' ');
 			}
 
 			@Override
@@ -479,6 +529,14 @@ public class JScreen implements Closeable {
 		return getWindowCell(x, y).bg;
 	}
 	
+	/**
+	 * Set how new cells are filled when scrolling up or down.
+	 * @param method
+	 */
+	public void setScrollFillMethod(ScrollFillMethod method) {
+		scrollFillMethod = method;
+	}
+	
 	// ##### Text attribute methods #####
 	
 	/**
@@ -679,7 +737,7 @@ public class JScreen implements Closeable {
 	 * If there are no fonts loaded, or the index is out of range, does nothing.
 	 * @param font
 	 */
-	public void selectTextFont(int font) {
+	public void setTextFont(int font) {
 		if (ArrayUtils.isNotEmpty(fonts) && (font >= 0) && (font < fonts.length)) {
 			this.font = font;
 		}
@@ -1305,8 +1363,8 @@ public class JScreen implements Closeable {
 	 * Gets the char at the given window-relative coordinates.
 	 * @param coord Coordinates relative to current text window.
 	 */
-	public char getCellChar(Point coord) {
-		return getCellChar(coord.x, coord.y);
+	public char getWindowCellChar(Point coord) {
+		return getWindowCellChar(coord.x, coord.y);
 	}
 
 	/**
@@ -1314,13 +1372,35 @@ public class JScreen implements Closeable {
 	 * @param x X coordinate relative to current text window.
 	 * @param y Y coordinate relative to current text window.
 	 */
-	public char getCellChar(int x, int y) {
+	public char getWindowCellChar(int x, int y) {
 		char ch = getWindowCell(x, y).ch;
 		if (charMap != null) {
 			ch = charMap.unmapChar(ch);
 		}
 		return ch;
 	}
+	
+	/**
+	 * Gets the char at the given screen-relative coordinates.
+	 * @param coord Coordinates relative to whole screen.
+	 */
+	public char getCellChar(Point coord) {
+		return getCellChar(coord.x, coord.y);
+	}
+
+	/**
+	 * Gets the char at the given screen-relative coordinates.
+	 * @param x X coordinate relative to whole screen.
+	 * @param y Y coordinate relative to whole screen.
+	 */
+	public char getCellChar(int x, int y) {
+		char ch = getCell(x, y).ch;
+		if (charMap != null) {
+			ch = charMap.unmapChar(ch);
+		}
+		return ch;
+	}
+
 
 	/**
 	 * Puts the given string at the given window-relative coordinates.
@@ -1489,6 +1569,16 @@ public class JScreen implements Closeable {
 		for (int i=0; i<str.length(); i++) {
 			print(str.charAt(i));
 		}
+	}
+	
+	/**
+	 * Prints a formatted string using the specified format string and arguments.
+	 * 
+	 * @param format Format string to use.
+	 * @param args Arguments for format string.
+	 */
+	public void printf(String format, Object... args) {
+		print(String.format(format, args));
 	}
 	
 	/**
@@ -1695,28 +1785,28 @@ public class JScreen implements Closeable {
 	}
 	
 	/**
-	 * Clear the current line, within the current text window.
+	 * Clear the current line, within the current text window, using current foreground and background colors.
 	 */
 	public void clearLine() {
 		clearCells(new Rectangle(window.x, cursor.y, window.width, 1));
 	}
 	
 	/**
-	 * Clear the current line from the cursor to the end of the line, within the current text window.
+	 * Clear the current line from the cursor to the end of the line, within the current text window, using current foreground and background colors.
 	 */
 	public void clearToEOL() {
 		clearCells(new Rectangle(cursor.x, cursor.y, (window.x + window.width) - cursor.x, 1));
 	}
 	
 	/**
-	 * Clear the current line from the cursor to the beginning of the line, within the current text window.
+	 * Clear the current line from the cursor to the beginning of the line, within the current text window, using current foreground and background colors.
 	 */
 	public void clearToBOL() {
 		clearCells(new Rectangle(window.x, cursor.y, (cursor.x - window.x) + 1, 1));
 	}
 	
 	/**
-	 * Clear from cursor to beginning of current text window.
+	 * Clear from cursor to beginning of current text window, using current foreground and background colors.
 	 */
 	public void clearToTop() {
 		clearToBOL();
@@ -1724,7 +1814,7 @@ public class JScreen implements Closeable {
 	}
 	
 	/**
-	 * Clear from cursor to end of current text window.
+	 * Clear from cursor to end of current text window, using current foreground and background colors.
 	 */
 	public void clearToBottom() {
 		clearToEOL();
@@ -1886,7 +1976,10 @@ public class JScreen implements Closeable {
 				cells[y] = cells[y + 1];
 			}
 			cells[bottom] = JScreenRegion.createCellRow(screenCells.width);
-			clearCells(new Rectangle(0, bottom, screenCells.width, 1));
+			if (scrollFillMethod == ScrollFillMethod.CURRENT) {
+				// Set new cells to current colors instead of default.
+				clearCells(new Rectangle(0, bottom, screenCells.width, 1));
+			}
 		} else {
 			if ((region.width < 1) || (region.height < 1)) {
 				// nothing to do
@@ -1909,7 +2002,10 @@ public class JScreen implements Closeable {
 				}
 				cells[y] = newRow;
 			}
-			clearCells(new Rectangle(region.x, bottom, region.width, 1));
+			if (scrollFillMethod == ScrollFillMethod.CURRENT) {
+				// Set new cells to current colors instead of default.
+				clearCells(new Rectangle(region.x, bottom, region.width, 1));
+			}
 		}
 		screen.repaint(regionPixels(region));
 	}
@@ -1955,7 +2051,10 @@ public class JScreen implements Closeable {
 				cells[y] = cells[y - 1];
 			}
 			cells[0] = JScreenRegion.createCellRow(screenCells.width);
-			clearCells(new Rectangle(0, 0, screenCells.width, 1));
+			if (scrollFillMethod == ScrollFillMethod.CURRENT) {
+				// Set new cells to current colors instead of default.
+				clearCells(new Rectangle(0, 0, screenCells.width, 1));
+			}
 		} else {
 			if ((region.width < 1) || (region.height < 1)) {
 				// nothing to do
@@ -1978,7 +2077,10 @@ public class JScreen implements Closeable {
 				}
 				cells[y] = newRow;
 			}
-			clearCells(new Rectangle(region.x, region.y, region.width, 1));
+			if (scrollFillMethod == ScrollFillMethod.CURRENT) {
+				// Set new cells to current colors instead of default.
+				clearCells(new Rectangle(region.x, region.y, region.width, 1));
+			}
 		}
 		screen.repaint(regionPixels(region));
 	}
@@ -2011,7 +2113,7 @@ public class JScreen implements Closeable {
 	 * Select the text in the given screen-relative region.
 	 * @param region
 	 */
-	private void selectCells(Rectangle region) {
+	public void selectCells(Rectangle region) {
 		Point ul = new Point(Math.max(screenCells.x, region.x), Math.max(screenCells.y, region.y));
 		Point lr = new Point(Math.min(screenCells.width, region.x + region.width),
 				Math.min(screenCells.height, region.y + region.height));
@@ -2024,7 +2126,7 @@ public class JScreen implements Closeable {
 	}
 	
 	/**
-	 * Copy the selected text to clipboard.
+	 * Copy the selected text to clipboard and remove the selection.
 	 */
 	public void copySelectionToClipboard() {
 		if (selection != null) {
@@ -2039,6 +2141,18 @@ public class JScreen implements Closeable {
 			}
 			Clipboard clipboard = Toolkit.getDefaultToolkit().getSystemClipboard();
 			clipboard.setContents(new StringSelection(StringUtils.join(text, '\n')), null);
+			clearSelection();
+		}
+	}
+	
+	/**
+	 * Remove text selection.
+	 */
+	public void clearSelection() {
+		Rectangle oldSelection = selection;
+		selection = null;
+		if (oldSelection != null) {
+			screen.repaint(regionPixels(oldSelection));
 		}
 	}
 
@@ -2150,6 +2264,26 @@ public class JScreen implements Closeable {
 	private JScreenCell getWindowCell(int x, int y) {
 		Point coord = windowCoordToScreen(x, y);
 		return cells[coord.y][coord.x];
+	}
+	
+	/**
+	 * Get the character cell at the given coordinates, relative to the whole screen.
+	 * @param coord
+	 * @return
+	 */
+	private JScreenCell getCell(Point coord) {
+		checkCellInScreen(coord);
+		return cells[coord.y][coord.x];
+	}
+
+	/**
+	 * Get the character cell at the given coordinates, relative to the whole screen.
+	 * @param x
+	 * @param y
+	 * @return
+	 */
+	private JScreenCell getCell(int x, int y) {
+		return getCell(new Point(x, y));
 	}
 
 	/**
