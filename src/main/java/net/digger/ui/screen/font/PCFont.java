@@ -44,31 +44,31 @@ public class PCFont extends JScreenFont {
 	/**
 	 * PC font for EGA 80x43 (640x344) or VGA 80x50 (640x400).
 	 */
-	public static final PCFont BIOS_8x8 = new PCFont("resources/fonts/pc/Px437_IBM_BIOS.ttf", 8, copyright);
+	public static final PCFont BIOS_8x8 = new PCFont("fonts/pc/Px437_IBM_BIOS.ttf", 8, copyright);
 	/**
 	 * PC font for MDA 80x25 (720x350).
 	 */
-	public static final PCFont MDA_9x14 = new PCFont("resources/fonts/pc/Px437_IBM_MDA.ttf", 16, copyright);
+	public static final PCFont MDA_9x14 = new PCFont("fonts/pc/Px437_IBM_MDA.ttf", 16, copyright);
 	/**
 	 * PC font for CGA 40x25 (320x200).
 	 */
-	public static final PCFont CGA_8x8_wide = new PCFont("resources/fonts/pc/Px437_IBM_CGA.ttf", 8, copyright);
+	public static final PCFont CGA_8x8_wide = new PCFont("fonts/pc/Px437_IBM_CGA.ttf", 8, copyright);
 	/**
 	 * PC font for CGA 80x25 (640x200).
 	 */
-	public static final PCFont CGA_8x8 = new PCFont("resources/fonts/pc/Px437_IBM_CGA-2y.ttf", 16, copyright);
+	public static final PCFont CGA_8x8 = new PCFont("fonts/pc/Px437_IBM_CGA-2y.ttf", 16, copyright);
 	/**
 	 * PC font for EGA 80x25 (640x350).
 	 */
-	public static final PCFont EGA_8x14 = new PCFont("resources/fonts/pc/Px437_IBM_EGA8.ttf", 16, copyright);
+	public static final PCFont EGA_8x14 = new PCFont("fonts/pc/Px437_IBM_EGA8.ttf", 16, copyright);
 	/**
 	 * PC font for VGA 40x25 (360x400).
 	 */
-	public static final PCFont VGA_9x16_wide = new PCFont("resources/fonts/pc/Px437_IBM_VGA9-2x.ttf", 16, copyright);
+	public static final PCFont VGA_9x16_wide = new PCFont("fonts/pc/Px437_IBM_VGA9-2x.ttf", 16, copyright);
 	/**
 	 * PC font for VGA 80x25 (720x400).
 	 */
-	public static final PCFont VGA_9x16 = new PCFont("resources/fonts/pc/Px437_IBM_VGA9.ttf", 16, copyright);
+	public static final PCFont VGA_9x16 = new PCFont("fonts/pc/Px437_IBM_VGA9.ttf", 16, copyright);
 
 	/**
 	 * Default PC font (VGA 9x16).

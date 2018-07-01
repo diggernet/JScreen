@@ -172,13 +172,16 @@ public class JScreenFont {
 		try {
 			// access .ttf file in .jar
 			InputStream is = JScreenFont.class.getClassLoader().getResourceAsStream(file);
+			if (is == null) {
+				is = JScreenFont.class.getClassLoader().getResourceAsStream("resources/" + file);
+			}
 			// create 1pt font
 			Font font = Font.createFont(Font.TRUETYPE_FONT, is);
 			// register font
 			GraphicsEnvironment.getLocalGraphicsEnvironment().registerFont(font);
 			return font.getFamily();
 		} catch (FontFormatException | IOException e) {
-			throw new RuntimeException("Unable to load font " + file);
+			throw new RuntimeException("Unable to load font " + file, e);
 		}
 	}
 	
