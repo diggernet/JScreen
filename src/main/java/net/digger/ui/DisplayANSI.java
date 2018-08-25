@@ -7,7 +7,6 @@ import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
-import java.util.HashMap;
 import java.util.Map;
 import java.util.TreeMap;
 
@@ -184,6 +183,39 @@ public class DisplayANSI {
 				return true;
 			}
 		}
+		System.out.println("Done.");
 		return false;
+	}
+	
+	/**
+	 * Extension of ANSI protocol handler which directly prints all control chars except CR/LF instead of interpreting them.
+	 */
+	public class ANSIPrintAll extends ANSI {
+		/**
+		 * Create instance of the protocol handler.
+		 * @param screen JScreen for text display.
+		 */
+		public ANSIPrintAll(JScreen screen) {
+			super(screen);
+		}
+
+		@Override
+		public void actionPrint(char ch) {
+			switch (ch) {
+				case 0x00:		// ^@	NUL
+					break;
+				case 0x0a:	// ^J	LF
+					screen.lineFeed();
+					break;
+				case 0x0d:	// ^M	CR
+					screen.carriageReturn();
+					break;
+				default:
+					insideMargin(() -> {
+						screen.putChar(ch);
+					});
+					break;
+			}
+		}
 	}
 }

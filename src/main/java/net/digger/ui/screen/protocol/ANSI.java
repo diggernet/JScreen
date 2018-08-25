@@ -11,12 +11,12 @@ import org.apache.commons.lang3.StringUtils;
 import net.digger.ui.screen.JScreen;
 import net.digger.ui.screen.color.Attr;
 import net.digger.ui.screen.color.CGAColor;
-import net.digger.util.VTEmulator;
-import net.digger.util.VTParser;
-import net.digger.util.VTParserTables.Action;
+import net.digger.util.vt.Action;
+import net.digger.util.vt.VTEmulator;
+import net.digger.util.vt.VTParser;
 
 /**
- * Copyright © 2017  David Walton
+ * Copyright © 2017,2018  David Walton
  * 
  * This file is part of JScreen.
  * 
@@ -38,13 +38,14 @@ import net.digger.util.VTParserTables.Action;
  * Extends PlainText protocol to implement ANSI escape sequences.
  * https://en.wikipedia.org/wiki/ANSI_escape_code
  * http://www.inwap.com/pdp10/ansicode.txt
- * http://vt100.net/docs/
- * http://vt100.net/emu/dec_ansi_parser
+ * https://vt100.net/docs/
+ * https://vt100.net/emu/dec_ansi_parser
+ * 
  * @author walton
  */
 public class ANSI extends PlainText implements VTEmulator {
 	// The escape character
-	private static final char ESCAPE = 27;
+	private static final char ESCAPE = 0x1B;
 	// Implemented ANSI escape sequence letters
 	private enum EscapeSequence { D, E, M };
 	private static final String CSI = ESCAPE + "[";
@@ -574,7 +575,12 @@ public class ANSI extends PlainText implements VTEmulator {
 	}
 
 
-	private void insideMargin(Runnable callback) {
+	/**
+	 * Use the given callback to print output, abiding by any scrolling region (DECSTBM) which is set.
+	 * 
+	 * @param callback Callback to perform output.
+	 */
+	protected void insideMargin(Runnable callback) {
 		int dy = 0;
 		int dh = 0;
 		// if scrolling region has been set, adjust current window

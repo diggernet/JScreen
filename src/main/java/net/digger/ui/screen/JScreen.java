@@ -401,6 +401,8 @@ public class JScreen implements Closeable {
 			frame.setResizable(false);
 			frame.add(screen.getComponent(), BorderLayout.CENTER);
 			frame.pack();
+			frame.setLocationRelativeTo(null);	// centers window on screen
+			frame.setLocationByPlatform(true);	// for me, doesn't seem to do anything
 			frame.setVisible(true);
 		});
 		return screen;
