@@ -11,6 +11,7 @@ import net.digger.ui.screen.color.CGAColor;
 import net.digger.ui.screen.font.PCFont;
 import net.digger.ui.screen.mode.PCScreenMode;
 import net.digger.ui.screen.protocol.ANSI;
+import net.digger.ui.screen.protocol.CGAANSIColor;
 import net.digger.util.Pause;
 
 /**
@@ -48,7 +49,7 @@ public class JScreenDemo {
 
 	public JScreenDemo() {
 		screen = JScreen.createJScreenWindow("JScreenDemo", PCScreenMode.VGA_80x25);
-		screen.setTextProtocol(new ANSI(screen));
+		screen.setTextProtocol(new ANSI(screen, new CGAANSIColor()));
 		screen.keyboard.clearKeyBuffer();
 		screen.keyboard.enableKeyBuffer(true);
 	}

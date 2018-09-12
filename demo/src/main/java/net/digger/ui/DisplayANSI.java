@@ -21,6 +21,8 @@ import javax.swing.SwingUtilities;
 import net.digger.ui.screen.JScreen;
 import net.digger.ui.screen.mode.PCScreenMode;
 import net.digger.ui.screen.protocol.ANSI;
+import net.digger.ui.screen.protocol.ANSIColor;
+import net.digger.ui.screen.protocol.CGAANSIColor;
 import net.digger.util.Pause;
 
 /**
@@ -108,7 +110,7 @@ public class DisplayANSI {
 	public DisplayANSI(int speed) {
 		bps = speed;
 		screen = JScreen.createJScreenWindow("DisplayANSI (right-click for options)", PCScreenMode.VGA_80x25);
-		screen.setTextProtocol(new ANSI(screen));
+		screen.setTextProtocol(new ANSI(screen, new CGAANSIColor()));
 		screen.hideCursor();
 		screen.keyboard.enableKeyBuffer(true);
 		JPopupMenu menu = screen.getContextMenu();
@@ -195,8 +197,8 @@ public class DisplayANSI {
 		 * Create instance of the protocol handler.
 		 * @param screen JScreen for text display.
 		 */
-		public ANSIPrintAll(JScreen screen) {
-			super(screen);
+		public ANSIPrintAll(JScreen screen, ANSIColor palette) {
+			super(screen, palette);
 		}
 
 		@Override

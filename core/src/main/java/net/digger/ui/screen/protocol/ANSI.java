@@ -10,7 +10,6 @@ import org.apache.commons.lang3.StringUtils;
 
 import net.digger.ui.screen.JScreen;
 import net.digger.ui.screen.color.Attr;
-import net.digger.ui.screen.color.CGAColor;
 import net.digger.util.vt.Action;
 import net.digger.util.vt.VTEmulator;
 import net.digger.util.vt.VTParser;
@@ -55,6 +54,7 @@ public class ANSI extends PlainText implements VTEmulator {
 	// not implemented:  i, l, h
 
 	private VTParser parser;
+	private ANSIColor palette;
 	private Consumer<String> dsrCallback = null;	// Optional callback for DSR (ESC[6n) support.
 	private Point cursor = null;		// Stored cursor position
 	private int topMargin = 0;			// Top of scrolling region
@@ -76,8 +76,8 @@ public class ANSI extends PlainText implements VTEmulator {
 	 * Create instance of the ANSI protocol handler.
 	 * @param screen JScreen for text display.
 	 */
-	public ANSI(JScreen screen) {
-		this(screen, null);
+	public ANSI(JScreen screen, ANSIColor palette) {
+		this(screen, palette, null);
 	}
 	
 	/**
@@ -88,8 +88,9 @@ public class ANSI extends PlainText implements VTEmulator {
 	 * @param screen JScreen for text display.
 	 * @param dsrCallback.
 	 */
-	public ANSI(JScreen screen, Consumer<String> dsrCallback) {
+	public ANSI(JScreen screen, ANSIColor palette, Consumer<String> dsrCallback) {
 		super(screen);
+		this.palette = palette;
 		this.dsrCallback = dsrCallback;
 		parser = new VTParser(this, true);
 	}
@@ -268,7 +269,7 @@ public class ANSI extends PlainText implements VTEmulator {
 			int param = nextParam(params, 0);
 			switch (param) {
 				case 0:		// Reset / Normal [all attributes off]
-					screen.setTextColors(CGAColor.DEFAULT_FG, CGAColor.DEFAULT_BG);
+					screen.setTextColors(palette.getDefaultFG(), palette.getDefaultBG());
 					break;
 				case 1:		// Bold or increased intensity
 					screen.setTextAttr(Attr.BOLD, true);
@@ -309,62 +310,62 @@ public class ANSI extends PlainText implements VTEmulator {
 				// Normal		Black	Red		Green	Brown	Blue	Magenta		Cyan	LtGrey
 				// Bright		DkGrey	LtRed	LtGreen	Yellow	LtBlue	LtMagenta	LtCyan	White
 				case 30:	// Set text color (foreground) [30 + n, where n is from the color table]
-					screen.setFGColor(CGAColor.BLACK);
+					screen.setFGColor(palette.getBlack());
 					break;
 				case 31:	// Set text color (foreground) [30 + n, where n is from the color table]
-					screen.setFGColor(CGAColor.RED);
+					screen.setFGColor(palette.getRed());
 					break;
 				case 32:	// Set text color (foreground) [30 + n, where n is from the color table]
-					screen.setFGColor(CGAColor.GREEN);
+					screen.setFGColor(palette.getGreen());
 					break;
 				case 33:	// Set text color (foreground) [30 + n, where n is from the color table]
-					screen.setFGColor(CGAColor.BROWN);
+					screen.setFGColor(palette.getBrown());
 					break;
 				case 34:	// Set text color (foreground) [30 + n, where n is from the color table]
-					screen.setFGColor(CGAColor.BLUE);
+					screen.setFGColor(palette.getBlue());
 					break;
 				case 35:	// Set text color (foreground) [30 + n, where n is from the color table]
-					screen.setFGColor(CGAColor.MAGENTA);
+					screen.setFGColor(palette.getMagenta());
 					break;
 				case 36:	// Set text color (foreground) [30 + n, where n is from the color table]
-					screen.setFGColor(CGAColor.CYAN);
+					screen.setFGColor(palette.getCyan());
 					break;
 				case 37:	// Set text color (foreground) [30 + n, where n is from the color table]
-					screen.setFGColor(CGAColor.LIGHT_GREY);
+					screen.setFGColor(palette.getLightGrey());
 					break;
 //				case 38:	// Reserved for extended set foreground color
 //					// [typical supported next arguments are 5;n where n is color index (0..255) or 2;r;g;b where r,g,b are red, green and blue color channels (out of 255)]
 				case 39:	// Default text color (foreground) [implementation defined (according to standard)]
-					screen.setFGColor(CGAColor.DEFAULT_FG);
+					screen.setFGColor(palette.getDefaultFG());
 					break;
 				case 40:	// Set background color [40 + n, where n is from the color table]
-					screen.setBGColor(CGAColor.BLACK);
+					screen.setBGColor(palette.getBlack());
 					break;
 				case 41:	// Set background color [40 + n, where n is from the color table]
-					screen.setBGColor(CGAColor.RED);
+					screen.setBGColor(palette.getRed());
 					break;
 				case 42:	// Set background color [40 + n, where n is from the color table]
-					screen.setBGColor(CGAColor.GREEN);
+					screen.setBGColor(palette.getGreen());
 					break;
 				case 43:	// Set background color [40 + n, where n is from the color table]
-					screen.setBGColor(CGAColor.BROWN);
+					screen.setBGColor(palette.getBrown());
 					break;
 				case 44:	// Set background color [40 + n, where n is from the color table]
-					screen.setBGColor(CGAColor.BLUE);
+					screen.setBGColor(palette.getBlue());
 					break;
 				case 45:	// Set background color [40 + n, where n is from the color table]
-					screen.setBGColor(CGAColor.MAGENTA);
+					screen.setBGColor(palette.getMagenta());
 					break;
 				case 46:	// Set background color [40 + n, where n is from the color table]
-					screen.setBGColor(CGAColor.CYAN);
+					screen.setBGColor(palette.getCyan());
 					break;
 				case 47:	// Set background color [40 + n, where n is from the color table]
-					screen.setBGColor(CGAColor.LIGHT_GREY);
+					screen.setBGColor(palette.getLightGrey());
 					break;
 //				case 48:	// Reserved for extended set background color
 //					// [typical supported next arguments are 5;n where n is color index (0..255) or 2;r;g;b where r,g,b are red, green and blue color channels (out of 255)]
 				case 49:	// Default background color [implementation defined (according to standard)]
-					screen.setBGColor(CGAColor.DEFAULT_BG);
+					screen.setBGColor(palette.getDefaultBG());
 					break;
 //				case 50:	// Reserved
 //				case 51:	// Framed
