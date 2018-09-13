@@ -164,7 +164,7 @@ public class JScreen implements Closeable {
 	
 	/**
 	 * Create a new JScreen instance using the given screen mode.
-	 * @param mode
+	 * @param mode Screen mode to use.
 	 */
 	public JScreen(JScreenMode mode) {
 		this(mode, null);
@@ -173,8 +173,8 @@ public class JScreen implements Closeable {
 	/**
 	 * Create a new JScreen instance using the given screen mode, 
 	 * and adding the given copyright message to the context menu.
-	 * @param mode
-	 * @param copyright
+	 * @param mode Screen mode to use.
+	 * @param copyright Copyright notice to display.
 	 */
 	public JScreen(JScreenMode mode, String copyright) {
 		mode = (mode == null) ? DEFAULT_SCREEN_MODE : mode;
@@ -357,7 +357,7 @@ public class JScreen implements Closeable {
 	
 	/**
 	 * Create a new UI window containing a JScreen instance.
-	 * @return
+	 * @return New JScreen instance.
 	 */
 	public static JScreen createJScreenWindow() {
 		return createJScreenWindow(DEFAULT_WINDOW_TITLE, null, null);
@@ -366,8 +366,8 @@ public class JScreen implements Closeable {
 	/**
 	 * Create a new UI window containing a JScreen instance,
 	 * using the given window title.
-	 * @param title
-	 * @return
+	 * @param title Window title to use.
+	 * @return New JScreen instance.
 	 */
 	public static JScreen createJScreenWindow(String title) {
 		return createJScreenWindow(title, null, null);
@@ -376,9 +376,9 @@ public class JScreen implements Closeable {
 	/**
 	 * Create a new UI window containing a JScreen instance,
 	 * using the given window title and screen mode.
-	 * @param title
-	 * @param mode
-	 * @return
+	 * @param title Window title to use.
+	 * @param mode Screen mode to use.
+	 * @return New JScreen instance.
 	 */
 	public static JScreen createJScreenWindow(String title, JScreenMode mode) {
 		return createJScreenWindow(title, mode, null);
@@ -387,10 +387,10 @@ public class JScreen implements Closeable {
 	/**
 	 * Create a new UI window containing a JScreen instance,
 	 * using the given window title, screen mode and context menu copyright message.
-	 * @param title
-	 * @param mode
-	 * @param copyright
-	 * @return
+	 * @param title Window title to use.
+	 * @param mode Screen mode to use.
+	 * @param copyright Copyright notice to display.
+	 * @return New JScreen instance.
 	 */
 	public static JScreen createJScreenWindow(String title, JScreenMode mode, String copyright) {
 		JScreen screen = new JScreen(mode, copyright);
@@ -422,9 +422,9 @@ public class JScreen implements Closeable {
 	
 	/**
 	 * Set new foreground color, background color, and text attributes in one call.
-	 * @param fg
-	 * @param bg
-	 * @param attrs
+	 * @param fg Foreground color palette index.
+	 * @param bg Background color palette index.
+	 * @param attrs Optional display attributes.
 	 */
 	public void setTextColors(int fg, int bg, Attr... attrs) {
 		setFGColor(fg);
@@ -434,7 +434,7 @@ public class JScreen implements Closeable {
 	
 	/** 
 	 * Set new foreground color.
-	 * @param fg
+	 * @param fg Foreground color palette index.
 	 */
 	public void setFGColor(int fg) {
 		this.fgColor = fg;
@@ -442,7 +442,7 @@ public class JScreen implements Closeable {
 	
 	/**
 	 * Set new background color.
-	 * @param bg
+	 * @param bg Background color palette index.
 	 */
 	public void setBGColor(int bg) {
 		this.bgColor = bg;
@@ -458,7 +458,7 @@ public class JScreen implements Closeable {
 	
 	/**
 	 * Get current foreground color.
-	 * @return
+	 * @return Foreground color palette index.
 	 */
 	public int getTextFGColor() {
 		return fgColor;
@@ -466,7 +466,7 @@ public class JScreen implements Closeable {
 	
 	/**
 	 * Get current background color.
-	 * @return
+	 * @return Background color palette index.
 	 */
 	public int getTextBGColor() {
 		return bgColor;
@@ -474,7 +474,7 @@ public class JScreen implements Closeable {
 
 	/**
 	 * Get foreground and background colors at point relative to current text window.
-	 * @param coord
+	 * @param coord Character cell position in current text window.
 	 * @return Array of colors: [fg, bg]
 	 */
 	public int[] getCellColors(Point coord) {
@@ -484,8 +484,8 @@ public class JScreen implements Closeable {
 	
 	/**
 	 * Get foreground and background colors at point relative to current text window.
-	 * @param x
-	 * @param y
+	 * @param x X position in current text window.
+	 * @param y Y position in current text window.
 	 * @return Array of colors: [fg, bg]
 	 */
 	public int[] getCellColors(int x, int y) {
@@ -495,8 +495,8 @@ public class JScreen implements Closeable {
 	
 	/**
 	 * Get foreground color at point relative to current text window.
-	 * @param coord
-	 * @return
+	 * @param coord Character cell position in current text window.
+	 * @return Foreground color palette index.
 	 */
 	public int getCellFGColor(Point coord) {
 		return getWindowCell(coord).fg;
@@ -504,9 +504,9 @@ public class JScreen implements Closeable {
 
 	/**
 	 * Get foreground color at point relative to current text window.
-	 * @param x
-	 * @param y
-	 * @return
+	 * @param x X position in current text window.
+	 * @param y Y position in current text window.
+	 * @return Foreground color palette index.
 	 */
 	public int getCellFGColor(int x, int y) {
 		return getWindowCell(x, y).fg;
@@ -514,8 +514,8 @@ public class JScreen implements Closeable {
 
 	/**
 	 * Get background color at point relative to current text window.
-	 * @param coord
-	 * @return
+	 * @param coord Character cell position in current text window.
+	 * @return Background color palette index.
 	 */
 	public int getCellBGColor(Point coord) {
 		return getWindowCell(coord).bg;
@@ -523,9 +523,9 @@ public class JScreen implements Closeable {
 	
 	/**
 	 * Get background color at point relative to current text window.
-	 * @param x
-	 * @param y
-	 * @return
+	 * @param x X position in current text window.
+	 * @param y Y position in current text window.
+	 * @return Background color palette index.
 	 */
 	public int getCellBGColor(int x, int y) {
 		return getWindowCell(x, y).bg;
@@ -533,7 +533,7 @@ public class JScreen implements Closeable {
 	
 	/**
 	 * Set how new cells are filled when scrolling up or down.
-	 * @param method
+	 * @param method Fill method to use.
 	 */
 	public void setScrollFillMethod(ScrollFillMethod method) {
 		scrollFillMethod = method;
@@ -543,7 +543,8 @@ public class JScreen implements Closeable {
 	
 	/**
 	 * Turn the given text attribute on or off.
-	 * @param attr
+	 * @param attr Display attribute to set.
+	 * @param on Turn it on or off.
 	 */
 	public void setTextAttr(Attr attr, boolean on) {
 		if (on) {
@@ -555,7 +556,7 @@ public class JScreen implements Closeable {
 	
 	/**
 	 * Toggle the state of the given text attribute.
-	 * @param attr
+	 * @param attr Display attribute to toggle.
 	 */
 	public void toggleTextAttr(Attr attr) {
 		if (attrs.contains(attr)) {
@@ -567,8 +568,8 @@ public class JScreen implements Closeable {
 	
 	/**
 	 * Get the state of the given text attribute.
-	 * @param attr
-	 * @return
+	 * @param attr Display attribute to check.
+	 * @return Current state of attribute.
 	 */
 	public boolean getTextAttr(Attr attr) {
 		return attrs.contains(attr);
@@ -583,9 +584,9 @@ public class JScreen implements Closeable {
 	
 	/**
 	 * Turn the given text attribute at the given window-relative coordinate on or off.
-	 * @param coord
-	 * @param attr
-	 * @param on
+	 * @param coord Character cell position in current text window.
+	 * @param attr Display attribute to set.
+	 * @param on Turn it on or off.
 	 */
 	public void setCellAttr(Point coord, Attr attr, boolean on) {
 		setCellAttr(coord.x, coord.y, attr, on);
@@ -593,10 +594,10 @@ public class JScreen implements Closeable {
 	
 	/**
 	 * Turn the given text attribute at the given window-relative coordinate on or off.
-	 * @param x
-	 * @param y
-	 * @param attr
-	 * @param on
+	 * @param x X position in current text window.
+	 * @param y Y position in current text window.
+	 * @param attr Display attribute to set.
+	 * @param on Turn it on or off.
 	 */
 	public void setCellAttr(int x, int y, Attr attr, boolean on) {
 		JScreenCell cell = getWindowCell(x, y);
@@ -609,8 +610,8 @@ public class JScreen implements Closeable {
 	
 	/**
 	 * Toggles the state of the given text attribute at the given window-relative coordinate.
-	 * @param coord
-	 * @param attr
+	 * @param coord Character cell position in current text window.
+	 * @param attr Display attribute to toggle.
 	 */
 	public void toggleCellAttr(Point coord, Attr attr) {
 		toggleCellAttr(coord.x, coord.y, attr);
@@ -618,9 +619,9 @@ public class JScreen implements Closeable {
 	
 	/**
 	 * Toggles the state of the given text attribute at the given window-relative coordinate.
-	 * @param x
-	 * @param y
-	 * @param attr
+	 * @param x X position in current text window.
+	 * @param y Y position in current text window.
+	 * @param attr Display attribute to toggle.
 	 */
 	public void toggleCellAttr(int x, int y, Attr attr) {
 		JScreenCell cell = getWindowCell(x, y);
@@ -633,8 +634,9 @@ public class JScreen implements Closeable {
 	
 	/**
 	 * Gets the state of the given text attribute at the given window-relative coordinate.
-	 * @param coord
-	 * @param attr
+	 * @param coord Character cell position in current text window.
+	 * @param attr Display attribute to check.
+	 * @return Current state of attribute.
 	 */
 	public boolean getCellAttr(Point coord, Attr attr) {
 		return getWindowCell(coord).attrs.contains(attr);
@@ -642,9 +644,10 @@ public class JScreen implements Closeable {
 
 	/**
 	 * Gets the state of the given text attribute at the given window-relative coordinate.
-	 * @param x
-	 * @param y
-	 * @param attr
+	 * @param x X position in current text window.
+	 * @param y Y position in current text window.
+	 * @param attr Display attribute to check.
+	 * @return Current state of attribute.
 	 */
 	public boolean getCellAttr(int x, int y, Attr attr) {
 		return getWindowCell(x, y).attrs.contains(attr);
@@ -652,8 +655,8 @@ public class JScreen implements Closeable {
 
 	/**
 	 * Create an EnumSet of attributes from varargs or an array of Attrs.
-	 * @param attrs
-	 * @return
+	 * @param attrs Zero or more attributes to add to the set.
+	 * @return EnumSet of attributes.
 	 */
 	private EnumSet<Attr> createAttrSet(Attr... attrs) {
 		EnumSet<Attr> set = EnumSet.noneOf(Attr.class);
@@ -671,7 +674,7 @@ public class JScreen implements Closeable {
 	
 	/**
 	 * Set a new screen mode.
-	 * @param mode
+	 * @param mode Screen mode to use.
 	 */
 	public void setScreenMode(JScreenMode mode) {
 		charMap = mode.charMap;
@@ -688,7 +691,7 @@ public class JScreen implements Closeable {
 	
 	/**
 	 * Get current screen dimensions (in chars).
-	 * @return
+	 * @return Screen dimensions in characters.
 	 */
 	public Dimension getTextScreenSize() {
 		return new Dimension(screenCells.getSize());
@@ -696,7 +699,7 @@ public class JScreen implements Closeable {
 	
 	/**
 	 * Get current screen dimensions (in pixels).
-	 * @return
+	 * @return Screen dimensions in pixels.
 	 */
 	public Dimension getTextScreenPixels() {
 		return new Dimension(screenPixels.getSize());
@@ -704,7 +707,7 @@ public class JScreen implements Closeable {
 	
 	/**
 	 * Set new screen dimensions (in chars).
-	 * @param size
+	 * @param size New screen dimensions in characters.
 	 */
 	public void setTextScreenSize(Dimension size) {
 		screenCells = new Rectangle(size);
@@ -720,7 +723,7 @@ public class JScreen implements Closeable {
 	/**
 	 * Set fonts to be available for text.
 	 * All fonts MUST have the same cell size!
-	 * @param font
+	 * @param fonts Fonts to make available.
 	 */
 	public void setTextFonts(JScreenFont... fonts) {
 		if (ArrayUtils.isEmpty(fonts)) {
@@ -737,7 +740,7 @@ public class JScreen implements Closeable {
 	/**
 	 * Selects the index of the font to use for future text.
 	 * If there are no fonts loaded, or the index is out of range, does nothing.
-	 * @param font
+	 * @param font Index of font to use.
 	 */
 	public void setTextFont(int font) {
 		if (ArrayUtils.isNotEmpty(fonts) && (font >= 0) && (font < fonts.length)) {
@@ -747,7 +750,7 @@ public class JScreen implements Closeable {
 	
 	/**
 	 * Get current text font index.
-	 * @return
+	 * @return Index of font in use.
 	 */
 	public int getTextFont() {
 		return font;
@@ -755,7 +758,8 @@ public class JScreen implements Closeable {
 
 	/**
 	 * Get font index at point relative to current text window.
-	 * @param coord
+	 * @param coord Character cell position in current text window.
+	 * @return Index of font in use.
 	 */
 	public int getCellFont(Point coord) {
 		JScreenCell cell = getWindowCell(coord);
@@ -764,8 +768,9 @@ public class JScreen implements Closeable {
 
 	/**
 	 * Get font index at point relative to current text window.
-	 * @param x
-	 * @param y
+	 * @param x X position in current text window.
+	 * @param y Y position in current text window.
+	 * @return Index of font in use.
 	 */
 	public int getCellFont(int x, int y) {
 		JScreenCell cell = getWindowCell(x, y);
@@ -813,7 +818,7 @@ public class JScreen implements Closeable {
 	
 	/**
 	 * Set the font scaling factor to use.
-	 * @param scale
+	 * @param scale Font scale to use.
 	 */
 	public void setFontScale(int scale) {
 		if ((screenCells == null) || ArrayUtils.isEmpty(fonts)) {
@@ -831,8 +836,8 @@ public class JScreen implements Closeable {
 	
 	/**
 	 * Set the cursor to the given coordinates relative to the current text window.
-	 * @param x
-	 * @param y
+	 * @param x X position in current text window.
+	 * @param y Y position in current text window.
 	 */
 	public void setCursor(int x, int y) {
 		setAbsCursor(windowCoordToScreen(x, y));
@@ -840,7 +845,7 @@ public class JScreen implements Closeable {
 
 	/**
 	 * Set the cursor to the given point relative to the current text window.
-	 * @param coord
+	 * @param coord Character cell position in current text window.
 	 */
 	public void setCursor(Point coord) {
 		setAbsCursor(windowPointToScreen(coord));
@@ -848,7 +853,7 @@ public class JScreen implements Closeable {
 	
 	/**
 	 * Get the current cursor position, relative to the current text window.
-	 * @return
+	 * @return Current cursor position.
 	 */
 	public Point getCursor() {
 		return new Point(cursor.x - window.x, cursor.y - window.y);
@@ -870,7 +875,7 @@ public class JScreen implements Closeable {
 	
 	/**
 	 * Set whether cursor blinks or not.
-	 * @param blink
+	 * @param blink Set blink on or off.
 	 */
 	public void blinkCursor(boolean blink) {
 		cursorBlink = blink;
@@ -928,7 +933,7 @@ public class JScreen implements Closeable {
 	 * Set the cursor to the given screen-relative point.
 	 * Refreshes old and new cursor cells.
 	 * Anything which moves the cursor should use this or setAbsCursor(x, y).
-	 * @param cursor
+	 * @param cursor Character cell position in screen.
 	 */
 	private void setAbsCursor(Point cursor) {
 		setAbsCursor(cursor.x, cursor.y);
@@ -938,8 +943,8 @@ public class JScreen implements Closeable {
 	 * Set the cursor to the given screen-relative coordinates.
 	 * Refreshes old and new cursor cells.
 	 * Anything which moves the cursor should use this or setAbsCursor(cursor).
-	 * @param x
-	 * @param y
+	 * @param x X position in screen.
+	 * @param y Y position in screen.
 	 */
 	private void setAbsCursor(int x, int y) {
 		int oldX = cursor.x;
@@ -956,10 +961,10 @@ public class JScreen implements Closeable {
 	
 	/**
 	 * Set bounds for the current text window, and moves cursor to 0, 0.
-	 * @param left
-	 * @param top
-	 * @param width
-	 * @param height
+	 * @param left X position of left side of text window in screen.
+	 * @param top Y position of top of text window in screen.
+	 * @param width Width of text window in screen.
+	 * @param height Height of text window in screen.
 	 */
 	public void setWindow(int left, int top, int width, int height) {
 		setTextWindow(left, top, width, height);
@@ -968,7 +973,7 @@ public class JScreen implements Closeable {
 
 	/**
 	 * Set bounds for the current text window, and moves cursor to 0, 0.
-	 * @param region
+	 * @param region Bounds of text window in screen.
 	 */
 	public void setWindow(Rectangle region) {
 		setTextWindow(region.x, region.y, region.width, region.height);
@@ -977,10 +982,10 @@ public class JScreen implements Closeable {
 
 	/**
 	 * Set bounds for the current text window.
-	 * @param left
-	 * @param top
-	 * @param width
-	 * @param height
+	 * @param left X position of left side of text window in screen.
+	 * @param top Y position of top of text window in screen.
+	 * @param width Width of text window in screen.
+	 * @param height Height of text window in screen.
 	 */
 	private void setTextWindow(int left, int top, int width, int height) {
 		if ((width < 1) || (height < 1)) {
@@ -1037,7 +1042,7 @@ public class JScreen implements Closeable {
 	
 	/**
 	 * Get the current text window.
-	 * @return
+	 * @return Bounds of current text window in screen.
 	 */
 	public Rectangle getWindow() {
 		return new Rectangle(window);
@@ -1045,7 +1050,7 @@ public class JScreen implements Closeable {
 	
 	/**
 	 * Save and return the current text window state.
-	 * @return
+	 * @return Current text window state.
 	 */
 	public JScreenWindowState saveWindowState() {
 		JScreenWindowState state = new JScreenWindowState();
@@ -1062,7 +1067,7 @@ public class JScreen implements Closeable {
 	
 	/**
 	 * Restore the given text window state.
-	 * @param state
+	 * @param state Text window state to restore.
 	 */
 	public void restoreWindowState(JScreenWindowState state) {
 		setWindow(state.window);
@@ -1186,8 +1191,8 @@ public class JScreen implements Closeable {
 
 	/**
 	 * Returns a new Point representing the given window-relative cell coordinates as absolute screen coordinates.
-	 * @param coord
-	 * @return
+	 * @param coord Character cell position in current text window.
+	 * @return Character cell position in screen.
 	 */
 	private Point windowPointToScreen(Point coord) {
 		return windowCoordToScreen(coord.x, coord.y);
@@ -1195,8 +1200,9 @@ public class JScreen implements Closeable {
 
 	/**
 	 * Returns a new Point representing the given window-relative cell coordinates as absolute screen coordinates.
-	 * @param coord
-	 * @return
+	 * @param x X position in current text window.
+	 * @param y Y position in current text window.
+	 * @return Character cell position in screen.
 	 */
 	private Point windowCoordToScreen(int x, int y) {
 		Point coord = new Point(window.x + x, window.y + y);
@@ -1206,8 +1212,8 @@ public class JScreen implements Closeable {
 
 	/**
 	 * Returns a new Rectangle representing the given window-relative cell region as an absolute screen region.
-	 * @param region
-	 * @return
+	 * @param region Bounds of region in current text window.
+	 * @return Bounds of region in screen.
 	 */
 	private Rectangle windowRegionToScreen(Rectangle region) {
 		region = new Rectangle(region);
@@ -1364,6 +1370,7 @@ public class JScreen implements Closeable {
 	/**
 	 * Gets the char at the given window-relative coordinates.
 	 * @param coord Coordinates relative to current text window.
+	 * @return Character from cell.
 	 */
 	public char getWindowCellChar(Point coord) {
 		return getWindowCellChar(coord.x, coord.y);
@@ -1373,6 +1380,7 @@ public class JScreen implements Closeable {
 	 * Gets the char at the given window-relative coordinates.
 	 * @param x X coordinate relative to current text window.
 	 * @param y Y coordinate relative to current text window.
+	 * @return Character from cell.
 	 */
 	public char getWindowCellChar(int x, int y) {
 		char ch = getWindowCell(x, y).ch;
@@ -1385,6 +1393,7 @@ public class JScreen implements Closeable {
 	/**
 	 * Gets the char at the given screen-relative coordinates.
 	 * @param coord Coordinates relative to whole screen.
+	 * @return Character from cell.
 	 */
 	public char getCellChar(Point coord) {
 		return getCellChar(coord.x, coord.y);
@@ -1394,6 +1403,7 @@ public class JScreen implements Closeable {
 	 * Gets the char at the given screen-relative coordinates.
 	 * @param x X coordinate relative to whole screen.
 	 * @param y Y coordinate relative to whole screen.
+	 * @return Character from cell.
 	 */
 	public char getCellChar(int x, int y) {
 		char ch = getCell(x, y).ch;
@@ -1712,6 +1722,7 @@ public class JScreen implements Closeable {
 	
 	/**
 	 * Fill the given window-relative region.
+	 * @param region Bounds of region in current text window.
 	 * @param ch Character to fill with, or null to preserve existing characters.
 	 * @param fg Foreground color to use, or null to preserve existing FG.
 	 * @param bg Background color to use, or null to preserve existing BG.
@@ -1723,6 +1734,7 @@ public class JScreen implements Closeable {
 	
 	/**
 	 * Fill the given screen-relative region.
+	 * @param region Bounds of region in screen.
 	 * @param ch Character to fill with, or null to leave existing characters.
 	 * @param fg Foreground color to use, or null to leave existing FG.
 	 * @param bg Background color to use, or null to leave existing BG.
@@ -1780,7 +1792,7 @@ public class JScreen implements Closeable {
 	
 	/**
 	 * Clear the given window-relative region, using current foreground and background colors.
-	 * @param region
+	 * @param region Bounds of region in current text window.
 	 */
 	public void clearRegion(Rectangle region) {
 		clearCells(windowRegionToScreen(region));
@@ -1825,7 +1837,7 @@ public class JScreen implements Closeable {
 	
 	/**
 	 * Clear the given screen-relative region, using current foreground and background colors.
-	 * @param region
+	 * @param region Bounds of region in screen.
 	 */
 	private void clearCells(Rectangle region) {
 		fillCells(region, ' ', fgColor, bgColor);
@@ -1835,7 +1847,7 @@ public class JScreen implements Closeable {
 
 	/**
 	 * Return the data from all the character cells in the screen.
-	 * @return
+	 * @return Contents of screen.
 	 */
 	public JScreenRegion readScreen() {
 		return readCells(screenCells);
@@ -1843,7 +1855,7 @@ public class JScreen implements Closeable {
 	
 	/**
 	 * Return the data from all the character cells in the current text window.
-	 * @return
+	 * @return Contents of current text window.
 	 */
 	public JScreenRegion readWindow() {
 		return readCells(window);
@@ -1851,7 +1863,8 @@ public class JScreen implements Closeable {
 	
 	/**
 	 * Return the data from all the character cells in the given window-relative region.
-	 * @return
+	 * @param region Bounds of region in current text window.
+	 * @return Contents of region in current text window.
 	 */
 	public JScreenRegion readRegion(Rectangle region) {
 		return readCells(windowRegionToScreen(region));
@@ -1859,7 +1872,8 @@ public class JScreen implements Closeable {
 	
 	/**
 	 * Return the data from all the character cells in the given screen-relative region.
-	 * @return
+	 * @param region Bounds of region in screen.
+	 * @return Contents of region in screen.
 	 */
 	private JScreenRegion readCells(Rectangle region) {
 		JScreenRegion data = new JScreenRegion(region.getSize());
@@ -1887,7 +1901,7 @@ public class JScreen implements Closeable {
 
 	/**
 	 * Write previously-read data to all the character cells in the screen.
-	 * @param data
+	 * @param data Contents for screen.
 	 */
 	public void writeScreen(JScreenRegion data) {
 		writeCells(screenCells, data);
@@ -1895,7 +1909,7 @@ public class JScreen implements Closeable {
 	
 	/**
 	 * Write previously-read data to all the character cells in the current text window.
-	 * @param data
+	 * @param data Contents for current text window.
 	 */
 	public void writeWindow(JScreenRegion data) {
 		writeCells(window, data);
@@ -1903,7 +1917,8 @@ public class JScreen implements Closeable {
 	
 	/**
 	 * Write previously-read data to all the character cells in given window-relative region.
-	 * @param data
+	 * @param region Bounds of region in current text window.
+	 * @param data Contents for region in current text window.
 	 */
 	public void writeRegion(Rectangle region, JScreenRegion data) {
 		writeCells(windowRegionToScreen(region), data);
@@ -1911,7 +1926,8 @@ public class JScreen implements Closeable {
 	
 	/**
 	 * Write previously-read data to all the character cells in given screen-relative region.
-	 * @param data
+	 * @param region Bounds of region in screen.
+	 * @param data Contents for region in screen.
 	 */
 	private void writeCells(Rectangle region, JScreenRegion data) {
 		int bottom = region.y + Math.min(region.height, data.size.height);
@@ -1953,7 +1969,7 @@ public class JScreen implements Closeable {
 	
 	/**
 	 * Scroll the given window-relative region up one line.
-	 * @param region
+	 * @param region Bounds of region in current text window to scroll.
 	 */
 	public void scrollRegionUp(Rectangle region) {
 		scrollCellsUp(windowRegionToScreen(region));
@@ -1969,7 +1985,7 @@ public class JScreen implements Closeable {
 	
 	/**
 	 * Scroll the given screen-relative region up one line.
-	 * @param region
+	 * @param region Bounds of region in screen to scroll.
 	 */
 	private void scrollCellsUp(Rectangle region) {
 		if (region.equals(screenCells)) {
@@ -2028,7 +2044,7 @@ public class JScreen implements Closeable {
 	
 	/**
 	 * Scroll the given window-relative region down one line.
-	 * @param region
+	 * @param region Bounds of region in current text window to scroll.
 	 */
 	public void scrollRegionDown(Rectangle region) {
 		scrollCellsDown(windowRegionToScreen(region));
@@ -2044,7 +2060,7 @@ public class JScreen implements Closeable {
 	
 	/**
 	 * Scroll the given screen-relative region down one line.
-	 * @param region
+	 * @param region Bounds of region in screen to scroll.
 	 */
 	private void scrollCellsDown(Rectangle region) {
 		if (region.equals(screenCells)) {
@@ -2105,7 +2121,7 @@ public class JScreen implements Closeable {
 	
 	/**
 	 * Select the text in the given window-relative region.
-	 * @param region
+	 * @param region Bounds of region in current text window to select.
 	 */
 	public void selectRegion(Rectangle region) {
 		selectCells(windowRegionToScreen(region));
@@ -2113,7 +2129,7 @@ public class JScreen implements Closeable {
 
 	/**
 	 * Select the text in the given screen-relative region.
-	 * @param region
+	 * @param region Bounds of region in screen to select.
 	 */
 	public void selectCells(Rectangle region) {
 		Point ul = new Point(Math.max(screenCells.x, region.x), Math.max(screenCells.y, region.y));
@@ -2162,7 +2178,7 @@ public class JScreen implements Closeable {
 	
 	/**
 	 * Sets the protocol used to display text (plain text, ANSI, AVATAR, etc).
-	 * @param protocol
+	 * @param protocol Text protocol to use.
 	 */
 	public void setTextProtocol(JScreenTextProtocol protocol) {
 		this.protocol = protocol;
@@ -2172,7 +2188,7 @@ public class JScreen implements Closeable {
 	
 	/**
 	 * Used by the wrapped JScreenComponent to render the screen to its canvas.
-	 * @param g
+	 * @param g Graphics context to use for display.
 	 */
 	private void paintScreen(Graphics g) {
 		// Use the clip bounds to determine what cells to render
@@ -2250,8 +2266,8 @@ public class JScreen implements Closeable {
 	
 	/**
 	 * Get the character cell at the given coordinates, relative to the current text window.
-	 * @param coord
-	 * @return
+	 * @param coord Character cell position in current text window.
+	 * @return Cell contents.
 	 */
 	private JScreenCell getWindowCell(Point coord) {
 		return getWindowCell(coord.x, coord.y);
@@ -2259,9 +2275,9 @@ public class JScreen implements Closeable {
 
 	/**
 	 * Get the character cell at the given coordinates, relative to the current text window.
-	 * @param x
-	 * @param y
-	 * @return
+	 * @param x X position in current text window.
+	 * @param y Y position in current text window.
+	 * @return Cell contents.
 	 */
 	private JScreenCell getWindowCell(int x, int y) {
 		Point coord = windowCoordToScreen(x, y);
@@ -2270,8 +2286,8 @@ public class JScreen implements Closeable {
 	
 	/**
 	 * Get the character cell at the given coordinates, relative to the whole screen.
-	 * @param coord
-	 * @return
+	 * @param coord Character cell position in screen.
+	 * @return Cell contents.
 	 */
 	private JScreenCell getCell(Point coord) {
 		checkCellInScreen(coord);
@@ -2280,9 +2296,9 @@ public class JScreen implements Closeable {
 
 	/**
 	 * Get the character cell at the given coordinates, relative to the whole screen.
-	 * @param x
-	 * @param y
-	 * @return
+	 * @param x X position in screen.
+	 * @param y Y position in screen.
+	 * @return Cell contents.
 	 */
 	private JScreenCell getCell(int x, int y) {
 		return getCell(new Point(x, y));
@@ -2290,8 +2306,8 @@ public class JScreen implements Closeable {
 
 	/**
 	 * Returns the pixel coordinates of the upper left corner of the given character cell.
-	 * @param cell
-	 * @return
+	 * @param coord Character cell position in screen.
+	 * @return Pixel coordinates of upper left corner of cell.
 	 */
 	private Point cellOrigin(Point coord) {
 		return cellOrigin(coord.x, coord.y);
@@ -2299,9 +2315,9 @@ public class JScreen implements Closeable {
 	
 	/**
 	 * Returns the pixel coordinates of the upper left corner of the given character cell.
-	 * @param x
-	 * @param y
-	 * @return
+	 * @param x X position in screen.
+	 * @param y Y position in screen.
+	 * @return Pixel coordinates of upper left corner of cell.
 	 */
 	private Point cellOrigin(int x, int y) {
 		return new Point(x * cellSize.width, y * cellSize.height);
@@ -2309,8 +2325,8 @@ public class JScreen implements Closeable {
 	
 	/**
 	 * Returns the pixel region of the given character cell.
-	 * @param cell
-	 * @return
+	 * @param coord Character cell position in screen.
+	 * @return Pixel region of character cell.
 	 */
 	private Rectangle cellPixels(Point coord) {
 		return cellPixels(coord.x, coord.y);
@@ -2318,9 +2334,9 @@ public class JScreen implements Closeable {
 	
 	/**
 	 * Returns the pixel region of the given character cell.
-	 * @param x
-	 * @param y
-	 * @return
+	 * @param x X position in screen.
+	 * @param y Y position in screen.
+	 * @return Pixel region of character cell.
 	 */
 	private Rectangle cellPixels(int x, int y) {
 		return new Rectangle(cellOrigin(x, y), cellSize);
@@ -2328,8 +2344,8 @@ public class JScreen implements Closeable {
 	
 	/**
 	 * Returns the pixel region of the given character cell region.
-	 * @param region
-	 * @return
+	 * @param region Bounds of character cell region in screen.
+	 * @return Pixel region of character cell region.
 	 */
 	private Rectangle regionPixels(Rectangle region) {
 		return regionPixels(region.x, region.y, region.width, region.height);
@@ -2337,11 +2353,11 @@ public class JScreen implements Closeable {
 	
 	/**
 	 * Returns the pixel region of the given character cell region.
-	 * @param left
-	 * @param top
-	 * @param width
-	 * @param height
-	 * @return
+	 * @param left X position of left side of character cell region in screen.
+	 * @param top Y position of top of character cell region in screen.
+	 * @param width Width of character cell region in screen.
+	 * @param height Height of character cell region in screen.
+	 * @return Pixel region of character cell region.
 	 */
 	private Rectangle regionPixels(int left, int top, int width, int height) {
 		Point start = cellOrigin(left, top);
@@ -2352,8 +2368,8 @@ public class JScreen implements Closeable {
 	
 	/**
 	 * Returns the character cell at the given pixel coordinates.
-	 * @param pixel
-	 * @return
+	 * @param pixel Pixel coordinates in screen.
+	 * @return Character cell position in screen.
 	 */
 	private Point findCell(Point pixel) {
 		return findCell(pixel.x, pixel.y);
@@ -2361,9 +2377,9 @@ public class JScreen implements Closeable {
 	
 	/**
 	 * Returns the character cell at the given pixel coordinates.
-	 * @param x
-	 * @param y
-	 * @return
+	 * @param x X position of pixel in screen.
+	 * @param y Y position of pixel in screen.
+	 * @return Character cell position in screen.
 	 */
 	private Point findCell(int x, int y) {
 		Point coord = new Point();
@@ -2377,7 +2393,7 @@ public class JScreen implements Closeable {
 	
 	/**
 	 * Throws exception if the given cell is off-screen.
-	 * @param cell
+	 * @param coord Character cell position relative to screen.
 	 */
 	private void checkCellInScreen(Point coord) {
 		if (!screenCells.contains(coord)) {
@@ -2387,7 +2403,7 @@ public class JScreen implements Closeable {
 	
 	/**
 	 * Throws exception if the given (screen-relative) cell is outside of current window.
-	 * @param cell
+	 * @param coord Character cell position relative to screen.
 	 */
 	private void checkCellInWindow(Point coord) {
 		if (!window.contains(coord)) {
@@ -2397,7 +2413,7 @@ public class JScreen implements Closeable {
 	
 	/**
 	 * Throws exception if the given cell region is off-screen.
-	 * @param region
+	 * @param region Bounds of character cell region relative to screen.
 	 */
 	private void checkRegionInScreen(Rectangle region) {
 		if (!screenCells.contains(region)) {
@@ -2407,7 +2423,7 @@ public class JScreen implements Closeable {
 	
 	/**
 	 * Throws exception if the given (screen-relative) cell region is outside of current window.
-	 * @param region
+	 * @param region Bounds of character cell region relative to screen.
 	 */
 	private void checkRegionInWindow(Rectangle region) {
 		if (!window.contains(region)) {
@@ -2417,7 +2433,7 @@ public class JScreen implements Closeable {
 	
 	/**
 	 * Throws exception if the given pixel is off-screen.
-	 * @param pixel
+	 * @param pixel Pixel coordinates relative to screen.
 	 */
 	private void checkPixelInScreen(Point pixel) {
 		if (!screenPixels.contains(pixel)) {
@@ -2429,7 +2445,7 @@ public class JScreen implements Closeable {
 
 	/**
 	 * Returns the JScreen context menu, for custom UI tweaks.
-	 * @return
+	 * @return Popup menu.
 	 */
 	public JPopupMenu getContextMenu() {
 		return menu;
@@ -2469,7 +2485,7 @@ public class JScreen implements Closeable {
 	
 	/**
 	 * Returns a reference to the wrapped JScreenComponent, so you can add it to your custom UI.
-	 * @return
+	 * @return Component for the screen.
 	 */
 	public JScreenComponent getComponent() {
 		return screen;
@@ -2477,7 +2493,6 @@ public class JScreen implements Closeable {
 	
 	/**
 	 * Actual component class, hidden here to avoid inheriting the whole JComponent API into JScreen.
-	 * @author walton
 	 */
 	public class JScreenComponent extends JComponent {
 		private static final long serialVersionUID = 8329461748149292559L;

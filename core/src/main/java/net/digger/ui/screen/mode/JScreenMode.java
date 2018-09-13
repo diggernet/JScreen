@@ -105,7 +105,7 @@ public class JScreenMode {
 	 * @param font Font to display.
 	 * @param palette List of available colors, and default FG and BG colors.
 	 * @param charMap CharMap for mapping between character sets.
-	 * @param scanLines Display black lines between scan lines (for scales >1).
+	 * @param scanLines Display black lines between scan lines (for scales {@literal >1}).
 	 */
 	public JScreenMode(int width, int height, JScreenCursor cursor, JScreenFont font, JScreenPalette palette, JScreenCharMap charMap, boolean scanLines) {
 		this.width = width;

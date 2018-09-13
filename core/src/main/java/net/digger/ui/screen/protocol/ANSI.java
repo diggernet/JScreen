@@ -75,6 +75,7 @@ public class ANSI extends PlainText implements VTEmulator {
 	/**
 	 * Create instance of the ANSI protocol handler.
 	 * @param screen JScreen for text display.
+	 * @param palette Palette of available colors.
 	 */
 	public ANSI(JScreen screen, ANSIColor palette) {
 		this(screen, palette, null);
@@ -82,10 +83,11 @@ public class ANSI extends PlainText implements VTEmulator {
 	
 	/**
 	 * Create instance of the ANSI protocol handler, with DSR callback.
-	 * If DSR callback is provided, and Device Status Report (ESC[#n) is received,
-	 * the callback will be called with CPR ("ESC[<row>;<col>R") or DSR ("ESC[0n"),
+	 * If DSR callback is provided, and Device Status Report ({@code ESC[#n}) is received,
+	 * the callback will be called with CPR ({@code ESC[<row>;<col>R}) or DSR ({@code ESC[0n}),
 	 * so that the application can send that response.
 	 * @param screen JScreen for text display.
+	 * @param palette Palette of available colors.
 	 * @param dsrCallback.
 	 */
 	public ANSI(JScreen screen, ANSIColor palette, Consumer<String> dsrCallback) {

@@ -38,7 +38,7 @@ public class JScreenRegion {
 
 	/**
 	 * Create a new screen region of the given size.
-	 * @param size
+	 * @param size Dimensions of screen region.
 	 */
 	public JScreenRegion(Dimension size) {
 		this.size = size;
@@ -47,8 +47,8 @@ public class JScreenRegion {
 
 	/**
 	 * Create a two-dimensional character cell array of the given size.
-	 * @param size
-	 * @return
+	 * @param size Dimensions of screen region.
+	 * @return Array of screen cells.
 	 */
 	public static JScreenCell[][] createCellGrid(Dimension size) {
 		JScreenCell[][] cells = new JScreenCell[size.height][size.width];
@@ -62,8 +62,8 @@ public class JScreenRegion {
 
 	/**
 	 * Create a character cell array of the given width.
-	 * @param width
-	 * @return
+	 * @param width Width of row.
+	 * @return Array of screen cells.
 	 */
 	public static JScreenCell[] createCellRow(int width) {
 		JScreenCell[] cells = new JScreenCell[width];

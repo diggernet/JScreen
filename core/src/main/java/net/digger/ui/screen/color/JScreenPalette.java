@@ -56,8 +56,8 @@ public class JScreenPalette {
 	
 	/**
 	 * Returns the color at the given palette index.
-	 * @param index
-	 * @return
+	 * @param index Palette index of color.
+	 * @return Color at given index.
 	 */
 	public Color get(int index) {
 		return color[index];
@@ -65,8 +65,8 @@ public class JScreenPalette {
 	
 	/**
 	 * Returns the FG color to use for the given screen character cell.
-	 * @param cell
-	 * @return
+	 * @param cell Character cell with colors and attributes.
+	 * @return Foreground color for that cell.
 	 */
 	public Color getFG(JScreenCell cell) {
 		return getFG(cell.fg, cell.bg, cell.attrs);
@@ -77,7 +77,7 @@ public class JScreenPalette {
 	 * @param fgIndex Palette index for current foreground color.
 	 * @param bgIndex Palette index for current background color.
 	 * @param attrs Current character attributes.
-	 * @return
+	 * @return Foreground color to use.
 	 */
 	public Color getFG(int fgIndex, int bgIndex, EnumSet<Attr> attrs) {
 		if ((attrs != null) && attrs.contains(Attr.REVERSE)) {
@@ -89,8 +89,8 @@ public class JScreenPalette {
 	
 	/**
 	 * Returns the BG color to use for the given screen character cell.
-	 * @param cell
-	 * @return
+	 * @param cell Character cell with colors and attributes.
+	 * @return Background color for that cell.
 	 */
 	public Color getBG(JScreenCell cell) {
 		return getBG(cell.fg, cell.bg, cell.attrs);
@@ -101,7 +101,7 @@ public class JScreenPalette {
 	 * @param fgIndex Palette index for current foreground color.
 	 * @param bgIndex Palette index for current background color.
 	 * @param attrs Current character attributes.
-	 * @return
+	 * @return Background color to use.
 	 */
 	public Color getBG(int fgIndex, int bgIndex, EnumSet<Attr> attrs) {
 		if ((attrs != null) && attrs.contains(Attr.REVERSE)) {

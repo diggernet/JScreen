@@ -196,6 +196,7 @@ public class DisplayANSI {
 		/**
 		 * Create instance of the protocol handler.
 		 * @param screen JScreen for text display.
+		 * @param palette Palette of available colors.
 		 */
 		public ANSIPrintAll(JScreen screen, ANSIColor palette) {
 			super(screen, palette);

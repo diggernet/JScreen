@@ -56,10 +56,10 @@ public class JScreenCell {
 	
 	/**
 	 * Create a new character cell with the given values.
-	 * @param ch
-	 * @param fg
-	 * @param bg
-	 * @param attrs
+	 * @param ch Character to put in cell.
+	 * @param fg Foreground color of cell.
+	 * @param bg Background color of cell.
+	 * @param attrs Text attributes for cell.
 	 */
 	public JScreenCell(char ch, int fg, int bg, Attr... attrs) {
 		this.ch = ch;
@@ -70,7 +70,7 @@ public class JScreenCell {
 	
 	/**
 	 * Set the text attributes for this character cell, with an array of attributes.
-	 * @param attrs
+	 * @param attrs Text attributes for cell.
 	 */
 	public void setAttrs(Attr... attrs) {
 		this.attrs.clear();
@@ -85,7 +85,7 @@ public class JScreenCell {
 
 	/**
 	 * Set the text attributes for this character cell, with an EnumSet of attributes.
-	 * @param attrs
+	 * @param attrs Text attributes for cell.
 	 */
 	public void setAttrs(EnumSet<Attr> attrs) {
 		this.attrs.clear();
@@ -94,8 +94,8 @@ public class JScreenCell {
 	
 	/**
 	 * Add or remove an attribute for this character cell.
-	 * @param attr
-	 * @param on
+	 * @param attr Display attribute to set.
+	 * @param on Turn it on or off.
 	 */
 	public void setAttr(Attr attr, boolean on) {
 		if (on) {
@@ -107,7 +107,7 @@ public class JScreenCell {
 	
 	/**
 	 * Toggle an attribute for this character cell.
-	 * @param attr
+	 * @param attr Display attribute to toggle.
 	 */
 	public void toggleAttr(Attr attr) {
 		if (attrs.contains(attr)) {

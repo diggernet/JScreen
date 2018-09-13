@@ -45,7 +45,7 @@ public class JScreenKeyboard {
 
 	/**
 	 * Constructor.  Sets up the key event buffer, and adds a KeyListener to the underlying component.
-	 * @param screen
+	 * @param screen Screen to listen for key events from.
 	 */
 	public JScreenKeyboard(JScreen screen) {
 		this.screen = screen;
@@ -77,7 +77,7 @@ public class JScreenKeyboard {
 	 * or you can do a blocking read to wait for a key event.
 	 * Defaults to off, to avoid having the buffer grow indefinitely when not in use.  
 	 * You must turn it on if you want to use keyboard input.
-	 * @param enable
+	 * @param enable Turn key buffer on or off.
 	 */
 	public void enableKeyBuffer(boolean enable) {
 		keyBufferEnabled = enable;
@@ -85,7 +85,7 @@ public class JScreenKeyboard {
 	
 	/**
 	 * Check if the key buffer is enabled;
-	 * @return
+	 * @return State of key buffer.
 	 */
 	public boolean isKeyBufferEnabled() {
 		return keyBufferEnabled;
@@ -100,7 +100,7 @@ public class JScreenKeyboard {
 	
 	/**
 	 * Check whether there are any key events waiting in the buffer.
-	 * @return
+	 * @return True if an event is in the buffer.
 	 */
 	public boolean isKeyEvent() {
 		return !keyBuffer.isEmpty();
@@ -108,7 +108,7 @@ public class JScreenKeyboard {
 	
 	/**
 	 * Returns the first waiting key event, or null if the buffer is empty.
-	 * @return
+	 * @return First event from buffer.
 	 */
 	public KeyEvent getKeyEvent() {
 		return keyBuffer.poll();
@@ -116,9 +116,9 @@ public class JScreenKeyboard {
 	
 	/**
 	 * Returns the first waiting key event, or waits for an event if the buffer is empty.
-	 * @return
+	 * @return First event from buffer.
 	 * @throws RuntimeException If called when the key buffer is not enabled (or else it'll block forever).
-	 * @throws InterruptedException
+	 * @throws InterruptedException If wait is interrupted.
 	 */
 	public KeyEvent awaitKeyEvent() throws InterruptedException {
 		if (!keyBufferEnabled) {
@@ -135,7 +135,7 @@ public class JScreenKeyboard {
 	/**
 	 * Add a KeyEvent to the key buffer.
 	 * KEY_RELEASED events are ignored, and KEY_PRESSED events are ignored unless isActionKey().
-	 * @param event
+	 * @param event Event to add to buffer.
 	 */
 	public void addKeyEvent(KeyEvent event) {
 		if (!keyBufferEnabled) {
@@ -161,7 +161,7 @@ public class JScreenKeyboard {
 	/**
 	 * Add KeyEvents replicating the given string to the key buffer.
 	 * This can be used for pasting text, and it will be handled as though it was typed.
-	 * @param text
+	 * @param text Text to add to buffer as key events.
 	 */
 	public void addKeyEvents(String text) {
 		if (!keyBufferEnabled || (text == null)) {
@@ -200,7 +200,7 @@ public class JScreenKeyboard {
 	/**
 	 * Inputs a line at the current cursor position.
 	 * @return Input string, when the user presses CR.
-	 * @throws InterruptedException
+	 * @throws InterruptedException If wait is interrupted.
 	 */
 	public String readLine() throws InterruptedException {
 		return readLine(Integer.MAX_VALUE);
@@ -208,8 +208,9 @@ public class JScreenKeyboard {
 	
 	/**
 	 * Inputs a line with the given max length at the current cursor position.
+	 * @param maxLength Maximum length of string to read.
 	 * @return Input string, when the user presses CR.
-	 * @throws InterruptedException
+	 * @throws InterruptedException If wait is interrupted.
 	 */
 	public String readLine(int maxLength) throws InterruptedException {
 		String input = "";
@@ -249,7 +250,7 @@ public class JScreenKeyboard {
 	
 	/**
 	 * Dumps details of the given KeyEvent to STDOUT.
-	 * @param event
+	 * @param event Key event to display details of.
 	 */
 	private void dumpKey(KeyEvent event) {
 		//You should only rely on the key char if the event

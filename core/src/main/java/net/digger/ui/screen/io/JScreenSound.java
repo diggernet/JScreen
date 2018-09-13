@@ -45,8 +45,8 @@ public class JScreenSound {
 	
 	/**
 	 * Plays sound at the given frequency for the given milliseconds.
-	 * @param hz
-	 * @param ms
+	 * @param hz Frequency to play.
+	 * @param ms Time to play for.
 	 */
 	public void play(int hz, int ms) {
 		if (!mute) {
@@ -58,7 +58,7 @@ public class JScreenSound {
 
 	/**
 	 * Starts playing sound at the given frequency.
-	 * @param hz
+	 * @param hz Frequency to play.
 	 */
 	public void play(int hz) {
 		if (!mute) {
@@ -75,7 +75,7 @@ public class JScreenSound {
 	
 	/**
 	 * Returns whether sound is currently muted.
-	 * @return
+	 * @return Muted state.
 	 */
 	public boolean isMuted() {
 		return mute;
@@ -83,7 +83,7 @@ public class JScreenSound {
 	
 	/**
 	 * Set mute on or off.
-	 * @param mute
+	 * @param mute New muted state.
 	 */
 	public void setMute(boolean mute) {
 		this.mute = mute;

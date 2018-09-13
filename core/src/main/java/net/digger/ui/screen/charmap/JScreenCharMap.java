@@ -32,8 +32,8 @@ public class JScreenCharMap {
 
 	/**
 	 * Returns character to display for the given Unicode character.
-	 * @param ch
-	 * @return
+	 * @param ch Character to be mapped.
+	 * @return Mapped character.
 	 */
 	public Character mapChar(char ch) {
 		Character chr = charMap.get(ch);
@@ -42,8 +42,8 @@ public class JScreenCharMap {
 	
 	/**
 	 * Returns the Unicode character for the given display character.
-	 * @param ch
-	 * @return
+	 * @param ch Character to be unmapped.
+	 * @return Unmapped character.
 	 */
 	public Character unmapChar(char ch) {
 		Character chr = charMap.getKey(ch);
