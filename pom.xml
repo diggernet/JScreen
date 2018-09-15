@@ -45,31 +45,46 @@
 		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
 	</properties>
 
+	<dependencyManagement>
+		<dependencies>
+			<dependency>
+				<groupId>net.digger</groupId>
+				<artifactId>jscreen</artifactId>
+				<version>${project.version}</version>
+			</dependency>
+			<dependency>
+				<groupId>net.digger</groupId>
+				<artifactId>jscreen-font-pc</artifactId>
+				<version>${project.version}</version>
+			</dependency>
+			<!-- https://mvnrepository.com/artifact/net.digger/utils -->
+			<dependency>
+				<groupId>net.digger</groupId>
+				<artifactId>utils</artifactId>
+				<version>1.0.0</version>
+			</dependency>
+			<!-- https://mvnrepository.com/artifact/net.digger/vt-parser -->
+			<dependency>
+				<groupId>net.digger</groupId>
+				<artifactId>vt-parser</artifactId>
+				<version>1.0.0</version>
+			</dependency>
+			<!-- https://mvnrepository.com/artifact/org.apache.commons/commons-collections4 -->
+			<dependency>
+				<groupId>org.apache.commons</groupId>
+				<artifactId>commons-collections4</artifactId>
+				<version>4.1</version>
+			</dependency>
+			<!-- https://mvnrepository.com/artifact/org.apache.commons/commons-lang3 -->
+			<dependency>
+				<groupId>org.apache.commons</groupId>
+				<artifactId>commons-lang3</artifactId>
+				<version>3.5</version>
+			</dependency>
+		</dependencies>
+	</dependencyManagement>
+	
 	<dependencies>
-		<!-- https://mvnrepository.com/artifact/net.digger/utils -->
-		<dependency>
-			<groupId>net.digger</groupId>
-			<artifactId>utils</artifactId>
-			<version>1.0.0</version>
-		</dependency>
-		<!-- https://mvnrepository.com/artifact/net.digger/vt-parser -->
-		<dependency>
-			<groupId>net.digger</groupId>
-			<artifactId>vt-parser</artifactId>
-			<version>1.0.0</version>
-		</dependency>
-		<!-- https://mvnrepository.com/artifact/org.apache.commons/commons-collections4 -->
-		<dependency>
-			<groupId>org.apache.commons</groupId>
-			<artifactId>commons-collections4</artifactId>
-			<version>4.1</version>
-		</dependency>
-		<!-- https://mvnrepository.com/artifact/org.apache.commons/commons-lang3 -->
-		<dependency>
-			<groupId>org.apache.commons</groupId>
-			<artifactId>commons-lang3</artifactId>
-			<version>3.5</version>
-		</dependency>
 	</dependencies>
 
 	<build>
