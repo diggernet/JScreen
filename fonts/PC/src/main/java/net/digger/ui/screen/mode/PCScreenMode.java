@@ -67,9 +67,17 @@ public class PCScreenMode extends JScreenMode {
 	 */
 	public static final PCScreenMode VGA_40x25 = new PCScreenMode(40, 25, new HorizontalCursor(14, 15), PCFont.VGA_9x16_wide, CGAColor.PALETTE, charMap, false);
 	/**
+	 * VGA 80x30 (640x480 with 8x16 font)
+	 */
+	public static final PCScreenMode VGA_80x30 = new PCScreenMode(80, 30, new HorizontalCursor(14, 15), PCFont.VGA_8x16, CGAColor.PALETTE, charMap, false);
+	/**
 	 * VGA 80x50 (640x400 with 8x8 font)
 	 */
 	public static final PCScreenMode VGA_80x50 = new PCScreenMode(80, 50, new HorizontalCursor(7, 7), PCFont.BIOS_8x8, CGAColor.PALETTE, charMap, false);
+	/**
+	 * VGA 80x60 (640x480 with 8x8 font)
+	 */
+	public static final PCScreenMode VGA_80x60 = new PCScreenMode(80, 60, new HorizontalCursor(7, 7), PCFont.BIOS_8x8, CGAColor.PALETTE, charMap, false);
 
 	public static final PCScreenMode DEFAULT_MODE = VGA_80x25;
 	
