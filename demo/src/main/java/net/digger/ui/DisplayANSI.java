@@ -19,7 +19,7 @@ import javax.swing.JRadioButtonMenuItem;
 import javax.swing.SwingUtilities;
 
 import net.digger.ui.screen.JScreen;
-import net.digger.ui.screen.mode.PCScreenMode;
+import net.digger.ui.screen.mode.IBMScreenMode;
 import net.digger.ui.screen.protocol.ANSI;
 import net.digger.ui.screen.protocol.ANSIColor;
 import net.digger.ui.screen.protocol.CGAANSIColor;
@@ -109,7 +109,7 @@ public class DisplayANSI {
 	
 	public DisplayANSI(int speed) {
 		bps = speed;
-		screen = JScreen.createJScreenWindow("DisplayANSI (right-click for options)", PCScreenMode.VGA_80x25);
+		screen = JScreen.createJScreenWindow("DisplayANSI (right-click for options)", IBMScreenMode.VGA_80x25);
 		screen.setTextProtocol(new ANSI(screen, new CGAANSIColor()));
 		screen.hideCursor();
 		screen.keyboard.enableKeyBuffer(true);

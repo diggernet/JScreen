@@ -35,7 +35,7 @@
 
 	<modules>
 		<module>core</module>
-		<module>fonts/PC</module>
+		<module>fonts/PC/IBM</module>
 		<module>demo</module>
 	</modules>
 
@@ -54,7 +54,7 @@
 			</dependency>
 			<dependency>
 				<groupId>net.digger</groupId>
-				<artifactId>jscreen-font-pc</artifactId>
+				<artifactId>jscreen-font-pc-ibm</artifactId>
 				<version>${project.version}</version>
 			</dependency>
 			<!-- https://mvnrepository.com/artifact/net.digger/utils -->

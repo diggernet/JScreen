@@ -8,8 +8,8 @@ import net.digger.ui.screen.JScreenRegion;
 import net.digger.ui.screen.JScreenWindowState;
 import net.digger.ui.screen.color.Attr;
 import net.digger.ui.screen.color.CGAColor;
-import net.digger.ui.screen.font.PCFont;
-import net.digger.ui.screen.mode.PCScreenMode;
+import net.digger.ui.screen.font.IBMFont;
+import net.digger.ui.screen.mode.IBMScreenMode;
 import net.digger.ui.screen.protocol.ANSI;
 import net.digger.ui.screen.protocol.CGAANSIColor;
 import net.digger.util.Pause;
@@ -48,7 +48,7 @@ public class JScreenDemo {
 	}
 
 	public JScreenDemo() {
-		screen = JScreen.createJScreenWindow("JScreenDemo", PCScreenMode.VGA_80x25);
+		screen = JScreen.createJScreenWindow("JScreenDemo", IBMScreenMode.VGA_80x25);
 		screen.setTextProtocol(new ANSI(screen, new CGAANSIColor()));
 		screen.keyboard.clearKeyBuffer();
 		screen.keyboard.enableKeyBuffer(true);
@@ -86,7 +86,7 @@ public class JScreenDemo {
 		Pause.second(1);
 
 		inDemoWin(() -> {
-			screen.frameWindow(null, PCFont.DOUBLE_FRAME);
+			screen.frameWindow(null, IBMFont.DOUBLE_FRAME);
 		});
 		Pause.second(2);
 
@@ -97,7 +97,7 @@ public class JScreenDemo {
 
 		inDemoWin(() -> {
 			screen.unframeWindow();
-			screen.frameWindow("This is a title", PCFont.DOUBLE_FRAME_SPACE);
+			screen.frameWindow("This is a title", IBMFont.DOUBLE_FRAME_SPACE);
 		});
 		Pause.second(2);
 

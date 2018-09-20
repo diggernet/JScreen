@@ -23,7 +23,7 @@ package net.digger.ui.screen.font;
  * Defines the parameters of PC fonts.
  * @author walton
  */
-public class PCFont extends JScreenFont {
+public class IBMFont extends JScreenFont {
 	/**
 	 * Characters to draw a single-line frame through the center of character cells.
 	 */
@@ -44,63 +44,63 @@ public class PCFont extends JScreenFont {
 	/**
 	 * IBM BIOS (& EGA/VGA) 8x8 font - 1:1 pixel ratio.
 	 */
-	public static final PCFont BIOS_8x8 = new PCFont("fonts/PC/Px437_IBM_BIOS.ttf", 8, copyright);
+	public static final IBMFont BIOS_8x8 = new IBMFont("fonts/PC/IBM/Px437_IBM_BIOS.ttf", 8, copyright);
 	/**
 	 * IBM BIOS (& EGA/VGA) 8x8 font - 2:1 pixel ratio.
 	 */
-	public static final PCFont BIOS_8x8_wide = new PCFont("fonts/PC/Px437_IBM_BIOS-2x.ttf", 8, copyright);
+	public static final IBMFont BIOS_8x8_wide = new IBMFont("fonts/PC/IBM/Px437_IBM_BIOS-2x.ttf", 8, copyright);
 	/**
 	 * IBM BIOS (& EGA/VGA) 8x8 font - 1:2 pixel ratio.
 	 */
-	public static final PCFont BIOS_8x8_tall = new PCFont("fonts/PC/Px437_IBM_BIOS-2y.ttf", 8, copyright);
+	public static final IBMFont BIOS_8x8_tall = new IBMFont("fonts/PC/IBM/Px437_IBM_BIOS-2y.ttf", 8, copyright);
 
 	/**
 	 * IBM MDA - 9x14 font, 1:1 pixel ratio.
 	 */
-	public static final PCFont MDA_9x14 = new PCFont("fonts/PC/Px437_IBM_MDA.ttf", 16, copyright);
+	public static final IBMFont MDA_9x14 = new IBMFont("fonts/PC/IBM/Px437_IBM_MDA.ttf", 16, copyright);
 
 	/**
 	 * IBM CGA (& PCjr) - default font, 1:1 pixel ratio (40 columns).
 	 */
-	public static final PCFont CGA_8x8_wide = new PCFont("fonts/PC/Px437_IBM_CGA.ttf", 8, copyright);
+	public static final IBMFont CGA_8x8_wide = new IBMFont("fonts/PC/IBM/Px437_IBM_CGA.ttf", 8, copyright);
 	/**
 	 * IBM CGA (& PCjr) - default font, 1:2 pixel ratio (80 columns).
 	 */
-	public static final PCFont CGA_8x8 = new PCFont("fonts/PC/Px437_IBM_CGA-2y.ttf", 16, copyright);
+	public static final IBMFont CGA_8x8 = new IBMFont("fonts/PC/IBM/Px437_IBM_CGA-2y.ttf", 16, copyright);
 
 	/**
 	 * IBM EGA (& VGA) 8x14 font, 1:1 pixel ratio (80 columns).
 	 */
-	public static final PCFont EGA_8x14 = new PCFont("fonts/PC/Px437_IBM_EGA8.ttf", 16, copyright);
+	public static final IBMFont EGA_8x14 = new IBMFont("fonts/PC/IBM/Px437_IBM_EGA8.ttf", 16, copyright);
 	/**
 	 * IBM EGA (& VGA) 8x14 font, 2:1 pixel ratio (40 columns).
 	 */
-	public static final PCFont EGA_8x14_wide = new PCFont("fonts/PC/Px437_IBM_EGA8-2x.ttf", 16, copyright);
+	public static final IBMFont EGA_8x14_wide = new IBMFont("fonts/PC/IBM/Px437_IBM_EGA8-2x.ttf", 16, copyright);
 	/**
 	 * IBM EGA (& VGA) 9x14 font, 1:1 pixel ratio (80 columns).
 	 */
-	public static final PCFont EGA_9x14 = new PCFont("fonts/PC/Px437_IBM_EGA9.ttf", 16, copyright);
+	public static final IBMFont EGA_9x14 = new IBMFont("fonts/PC/IBM/Px437_IBM_EGA9.ttf", 16, copyright);
 	/**
 	 * IBM EGA (& VGA) 9x14 font, 2:1 pixel ratio (40 columns).
 	 */
-	public static final PCFont EGA_9x14_wide = new PCFont("fonts/PC/Px437_IBM_EGA9-2x.ttf", 16, copyright);
+	public static final IBMFont EGA_9x14_wide = new IBMFont("fonts/PC/IBM/Px437_IBM_EGA9-2x.ttf", 16, copyright);
 
 	/**
 	 * IBM VGA (& MCGA) 8x16 font, 1:1 pixel ratio (80 columns).
 	 */
-	public static final PCFont VGA_8x16 = new PCFont("fonts/PC/Px437_IBM_VGA8.ttf", 16, copyright);
+	public static final IBMFont VGA_8x16 = new IBMFont("fonts/PC/IBM/Px437_IBM_VGA8.ttf", 16, copyright);
 	/**
 	 * IBM VGA (& MCGA) 8x16 font, 2:1 pixel ratio (40 columns).
 	 */
-	public static final PCFont VGA_8x16_wide = new PCFont("fonts/PC/Px437_IBM_VGA8-2x.ttf", 16, copyright);
+	public static final IBMFont VGA_8x16_wide = new IBMFont("fonts/PC/IBM/Px437_IBM_VGA8-2x.ttf", 16, copyright);
 	/**
 	 * IBM VGA (& MCGA) 9x16 font, 1:1 pixel ratio (80 columns).
 	 */
-	public static final PCFont VGA_9x16 = new PCFont("fonts/PC/Px437_IBM_VGA9.ttf", 16, copyright);
+	public static final IBMFont VGA_9x16 = new IBMFont("fonts/PC/IBM/Px437_IBM_VGA9.ttf", 16, copyright);
 	/**
 	 * IBM VGA (& MCGA) 9x16 font, 2:1 pixel ratio (40 columns).
 	 */
-	public static final PCFont VGA_9x16_wide = new PCFont("fonts/PC/Px437_IBM_VGA9-2x.ttf", 16, copyright);
+	public static final IBMFont VGA_9x16_wide = new IBMFont("fonts/PC/IBM/Px437_IBM_VGA9-2x.ttf", 16, copyright);
 
 	/**
 	 * Default PC font (VGA 9x16).
@@ -108,7 +108,7 @@ public class PCFont extends JScreenFont {
 	 * The 9x fonts imitate the PC behavior (in those modes) of displaying an 8x character with a blank column to the right for spacing.
 	 * Those fonts also repeat the 8th column in the 9th column, as the PC would do for characters 0xC0-0xDF (NOT 0xB0-0xDF, as some sources claim).
 	 */
-	public static final PCFont DEFAULT_FONT = VGA_9x16;
+	public static final IBMFont DEFAULT_FONT = VGA_9x16;
 
 	/**
 	 * Create a new PC font.
@@ -116,7 +116,7 @@ public class PCFont extends JScreenFont {
 	 * @param pointSize Font base point size (where the font renders 1px as 1px).
 	 * @param about Copyright string for font.
 	 */
-	public PCFont(String file, int pointSize, String about) {
+	public IBMFont(String file, int pointSize, String about) {
 		super(registerFont(file), pointSize, about);
 	}
 }
