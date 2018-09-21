@@ -20,7 +20,7 @@ package net.digger.ui.screen.font;
  */
 
 /**
- * Defines the parameters of PC fonts.
+ * Defines the parameters of IBM fonts.
  * @author walton
  */
 public class IBMFont extends JScreenFont {
@@ -40,7 +40,7 @@ public class IBMFont extends JScreenFont {
 
 	private static final String copyright = "\u00A92016 by VileR (http://int10h.org)";
 
-	
+
 	/**
 	 * IBM BIOS (& EGA/VGA) 8x8 font - 1:1 pixel ratio.
 	 */
@@ -52,7 +52,7 @@ public class IBMFont extends JScreenFont {
 	/**
 	 * IBM BIOS (& EGA/VGA) 8x8 font - 1:2 pixel ratio.
 	 */
-	public static final IBMFont BIOS_8x8_tall = new IBMFont("fonts/PC/IBM/Px437_IBM_BIOS-2y.ttf", 8, copyright);
+	public static final IBMFont BIOS_8x8_tall = new IBMFont("fonts/PC/IBM/Px437_IBM_BIOS-2y.ttf", 16, copyright);
 
 	/**
 	 * IBM MDA - 9x14 font, 1:1 pixel ratio.
@@ -103,7 +103,7 @@ public class IBMFont extends JScreenFont {
 	public static final IBMFont VGA_9x16_wide = new IBMFont("fonts/PC/IBM/Px437_IBM_VGA9-2x.ttf", 16, copyright);
 
 	/**
-	 * Default PC font (VGA 9x16).
+	 * Default IBM font (VGA 9x16).
 	 * http://int10h.org/oldschool-pc-fonts/
 	 * The 9x fonts imitate the PC behavior (in those modes) of displaying an 8x character with a blank column to the right for spacing.
 	 * Those fonts also repeat the 8th column in the 9th column, as the PC would do for characters 0xC0-0xDF (NOT 0xB0-0xDF, as some sources claim).
@@ -111,7 +111,7 @@ public class IBMFont extends JScreenFont {
 	public static final IBMFont DEFAULT_FONT = VGA_9x16;
 
 	/**
-	 * Create a new PC font.
+	 * Create a new IBM font.
 	 * @param file Path to the font file in the .jar file.
 	 * @param pointSize Font base point size (where the font renders 1px as 1px).
 	 * @param about Copyright string for font.

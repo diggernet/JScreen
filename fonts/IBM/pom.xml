@@ -8,7 +8,7 @@
 		<version>1.2.0-SNAPSHOT</version>
 	</parent>
 
-	<artifactId>jscreen-font-pc-ibm</artifactId>
+	<artifactId>jscreen-fonts-ibm</artifactId>
 
 	<name>${project.groupId}:${project.artifactId}</name>
 	<description>IBM PC fonts for JScreen.</description>
