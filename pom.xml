@@ -36,6 +36,7 @@
 	<modules>
 		<module>core</module>
 		<module>fonts/IBM</module>
+		<module>fonts/CBM</module>
 		<module>demo</module>
 	</modules>
 
