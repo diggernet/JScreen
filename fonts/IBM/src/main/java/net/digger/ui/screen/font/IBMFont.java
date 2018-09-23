@@ -42,15 +42,15 @@ public class IBMFont extends JScreenFont {
 
 
 	/**
-	 * IBM BIOS (& EGA/VGA) 8x8 font - 1:1 pixel ratio.
+	 * IBM BIOS (&amp; EGA/VGA) 8x8 font - 1:1 pixel ratio.
 	 */
 	public static final IBMFont BIOS_8x8 = new IBMFont("fonts/PC/IBM/Px437_IBM_BIOS.ttf", 8, copyright);
 	/**
-	 * IBM BIOS (& EGA/VGA) 8x8 font - 2:1 pixel ratio.
+	 * IBM BIOS (&amp; EGA/VGA) 8x8 font - 2:1 pixel ratio.
 	 */
 	public static final IBMFont BIOS_8x8_wide = new IBMFont("fonts/PC/IBM/Px437_IBM_BIOS-2x.ttf", 8, copyright);
 	/**
-	 * IBM BIOS (& EGA/VGA) 8x8 font - 1:2 pixel ratio.
+	 * IBM BIOS (&amp; EGA/VGA) 8x8 font - 1:2 pixel ratio.
 	 */
 	public static final IBMFont BIOS_8x8_tall = new IBMFont("fonts/PC/IBM/Px437_IBM_BIOS-2y.ttf", 16, copyright);
 
@@ -60,45 +60,45 @@ public class IBMFont extends JScreenFont {
 	public static final IBMFont MDA_9x14 = new IBMFont("fonts/PC/IBM/Px437_IBM_MDA.ttf", 16, copyright);
 
 	/**
-	 * IBM CGA (& PCjr) - default font, 1:1 pixel ratio (40 columns).
+	 * IBM CGA (&amp; PCjr) - default font, 1:1 pixel ratio (40 columns).
 	 */
 	public static final IBMFont CGA_8x8_wide = new IBMFont("fonts/PC/IBM/Px437_IBM_CGA.ttf", 8, copyright);
 	/**
-	 * IBM CGA (& PCjr) - default font, 1:2 pixel ratio (80 columns).
+	 * IBM CGA (&amp; PCjr) - default font, 1:2 pixel ratio (80 columns).
 	 */
 	public static final IBMFont CGA_8x8 = new IBMFont("fonts/PC/IBM/Px437_IBM_CGA-2y.ttf", 16, copyright);
 
 	/**
-	 * IBM EGA (& VGA) 8x14 font, 1:1 pixel ratio (80 columns).
+	 * IBM EGA (&amp; VGA) 8x14 font, 1:1 pixel ratio (80 columns).
 	 */
 	public static final IBMFont EGA_8x14 = new IBMFont("fonts/PC/IBM/Px437_IBM_EGA8.ttf", 16, copyright);
 	/**
-	 * IBM EGA (& VGA) 8x14 font, 2:1 pixel ratio (40 columns).
+	 * IBM EGA (&amp; VGA) 8x14 font, 2:1 pixel ratio (40 columns).
 	 */
 	public static final IBMFont EGA_8x14_wide = new IBMFont("fonts/PC/IBM/Px437_IBM_EGA8-2x.ttf", 16, copyright);
 	/**
-	 * IBM EGA (& VGA) 9x14 font, 1:1 pixel ratio (80 columns).
+	 * IBM EGA (&amp; VGA) 9x14 font, 1:1 pixel ratio (80 columns).
 	 */
 	public static final IBMFont EGA_9x14 = new IBMFont("fonts/PC/IBM/Px437_IBM_EGA9.ttf", 16, copyright);
 	/**
-	 * IBM EGA (& VGA) 9x14 font, 2:1 pixel ratio (40 columns).
+	 * IBM EGA (&amp; VGA) 9x14 font, 2:1 pixel ratio (40 columns).
 	 */
 	public static final IBMFont EGA_9x14_wide = new IBMFont("fonts/PC/IBM/Px437_IBM_EGA9-2x.ttf", 16, copyright);
 
 	/**
-	 * IBM VGA (& MCGA) 8x16 font, 1:1 pixel ratio (80 columns).
+	 * IBM VGA (&amp; MCGA) 8x16 font, 1:1 pixel ratio (80 columns).
 	 */
 	public static final IBMFont VGA_8x16 = new IBMFont("fonts/PC/IBM/Px437_IBM_VGA8.ttf", 16, copyright);
 	/**
-	 * IBM VGA (& MCGA) 8x16 font, 2:1 pixel ratio (40 columns).
+	 * IBM VGA (&amp; MCGA) 8x16 font, 2:1 pixel ratio (40 columns).
 	 */
 	public static final IBMFont VGA_8x16_wide = new IBMFont("fonts/PC/IBM/Px437_IBM_VGA8-2x.ttf", 16, copyright);
 	/**
-	 * IBM VGA (& MCGA) 9x16 font, 1:1 pixel ratio (80 columns).
+	 * IBM VGA (&amp; MCGA) 9x16 font, 1:1 pixel ratio (80 columns).
 	 */
 	public static final IBMFont VGA_9x16 = new IBMFont("fonts/PC/IBM/Px437_IBM_VGA9.ttf", 16, copyright);
 	/**
-	 * IBM VGA (& MCGA) 9x16 font, 2:1 pixel ratio (40 columns).
+	 * IBM VGA (&amp; MCGA) 9x16 font, 2:1 pixel ratio (40 columns).
 	 */
 	public static final IBMFont VGA_9x16_wide = new IBMFont("fonts/PC/IBM/Px437_IBM_VGA9-2x.ttf", 16, copyright);
 

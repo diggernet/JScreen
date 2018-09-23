@@ -78,7 +78,7 @@ public class CBMScreenMode extends JScreenMode {
 	 * @param font Font to display.
 	 * @param palette List of available colors, and default FG and BG colors.
 	 * @param charMap CharMap for mapping between character sets.
-	 * @param scanLines Display black lines between scan lines (for scales >1).
+	 * @param scanLines Display black lines between scan lines (for scales {@literal >}1).
 	 */
 	public CBMScreenMode(int width, int height, JScreenCursor cursor, CBMFont font, JScreenPalette palette, JScreenCharMap charMap, boolean scanLines) {
 		super(width, height, cursor, font, palette, charMap, scanLines);
