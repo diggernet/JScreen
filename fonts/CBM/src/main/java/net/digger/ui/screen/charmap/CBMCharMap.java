@@ -34,6 +34,7 @@ public class CBMCharMap extends JScreenCharMap {
 	
 	/**
 	 * Create a new instance of the PETSCII translation map.
+	 * @param base Unicode character to start incrementing from.
 	 */
 	public CBMCharMap(int base) {
 		for (int i=0; i<256; i++) {
