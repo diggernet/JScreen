@@ -46,37 +46,37 @@ public class CBMFont extends JScreenFont {
 	/**
 	 * Commodore VIC-20 font.
 	 */
-	public static final CBMFont VIC20 = new CBMFont("fonts/CBM/Pet/PetMe2X.ttf", 8, copyright);
+	public static final CBMFont VIC20 = new CBMFont("fonts/CBM/PetMe2X.ttf", 8, copyright);
 
 	/**
 	 * Commodore PET font.
 	 */
-	public static final CBMFont Pet = new CBMFont("fonts/CBM/Pet/PetMe.ttf", 8, copyright);
+	public static final CBMFont Pet = new CBMFont("fonts/CBM/PetMe.ttf", 8, copyright);
 
 	/**
 	 * Commodore CBM-II font.
 	 */
-	public static final CBMFont CBM_II = new CBMFont("fonts/CBM/Pet/PetMe2Y.ttf", 16, copyright);
+	public static final CBMFont CBM_II = new CBMFont("fonts/CBM/PetMe2Y.ttf", 16, copyright);
 
 	/**
 	 * Commodore 64 40-column font.
 	 */
-	public static final CBMFont C64_40 = new CBMFont("fonts/CBM/Pet/PetMe64.ttf", 8, copyright);
+	public static final CBMFont C64_40 = new CBMFont("fonts/CBM/PetMe64.ttf", 8, copyright);
 
 	/**
 	 * Commodore 64 80-column font.
 	 */
-	public static final CBMFont C64_80 = new CBMFont("fonts/CBM/Pet/PetMe642Y.ttf", 8, copyright);
+	public static final CBMFont C64_80 = new CBMFont("fonts/CBM/PetMe642Y.ttf", 8, copyright);
 
 	/**
 	 * Commodore 128 40-column font.
 	 */
-	public static final CBMFont C128_40 = new CBMFont("fonts/CBM/Pet/PetMe128.ttf", 8, copyright);
+	public static final CBMFont C128_40 = new CBMFont("fonts/CBM/PetMe128.ttf", 8, copyright);
 
 	/**
 	 * Commodore 128 80-column font.
 	 */
-	public static final CBMFont C128_80 = new CBMFont("fonts/CBM/Pet/PetMe1282Y.ttf", 8, copyright);
+	public static final CBMFont C128_80 = new CBMFont("fonts/CBM/PetMe1282Y.ttf", 8, copyright);
 	
 	/**
 	 * Create a new CBM font.

@@ -57,7 +57,7 @@ public class JScreenDemo {
 	public void run() {
 		screen.clearScreen();
 		screen.setCursor(0, 1);
-		screen.putStrCentered("JScreen");
+		screen.putStrCentered("JScreen", CGAColor.LIGHT_GREY, CGAColor.BLACK, Attr.BOLD);
 		screen.setWindow(textWin);
 		textWinSave = screen.saveWindowState();
 		screen.setWindow(demoWin);

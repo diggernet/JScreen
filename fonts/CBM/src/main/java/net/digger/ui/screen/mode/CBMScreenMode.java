@@ -28,7 +28,7 @@ import net.digger.ui.screen.font.CBMFont;
  */
 
 /**
- * Defines standard CBM text modes.
+ * Defines some standard CBM text modes.
  * @author walton
  */
 public class CBMScreenMode extends JScreenMode {

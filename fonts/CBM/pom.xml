@@ -13,6 +13,19 @@
 	<name>${project.groupId}:${project.artifactId}</name>
 	<description>Commodore fonts for JScreen.</description>
 
+	<licenses>
+		<license>
+			<name>GNU Lesser General Public License (LGPL), Version 3.0</name>
+			<url>https://www.gnu.org/licenses/lgpl-3.0.html</url>
+			<comments>License for Java code.</comments>
+		</license>
+		<license>
+			<name>Kreative Software Relay Fonts Free Use License v1.2f</name>
+			<url>http://www.kreativekorp.com/software/fonts/FreeLicense.txt</url>
+			<comments>License for TTF font files.</comments>
+		</license>
+	</licenses>
+
 	<dependencies>
 		<dependency>
 			<groupId>net.digger</groupId>

@@ -24,7 +24,11 @@
 		</dependency>
 		<dependency>
 			<groupId>net.digger</groupId>
-			<artifactId>jscreen-font-pc-ibm</artifactId>
+			<artifactId>jscreen-fonts-ibm</artifactId>
+		</dependency>
+		<dependency>
+			<groupId>net.digger</groupId>
+			<artifactId>jscreen-fonts-cbm</artifactId>
 		</dependency>
 	</dependencies>
 

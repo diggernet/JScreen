@@ -78,7 +78,7 @@ public class DisplayANSI {
 			System.out.println("DisplayANSI, a simple ANSI art viewer.");
 			System.out.println("Usage:");
 			System.out.println("\tjava -jar DisplayANSI.jar <filename> <bps>");
-			System.out.println("Right-click the screen for options.");
+			System.out.println("\tRight-click the screen for options.");
 			System.out.println();
 			return;
 		}

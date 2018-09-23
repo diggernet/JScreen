@@ -29,7 +29,7 @@ import net.digger.ui.screen.font.IBMFont;
  */
 
 /**
- * Defines standard PC text modes.
+ * Defines some standard IBM PC text modes.
  * @author walton
  */
 public class IBMScreenMode extends JScreenMode {

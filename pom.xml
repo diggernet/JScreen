@@ -8,7 +8,7 @@
 	<packaging>pom</packaging>
 
 	<name>${project.groupId}:${project.artifactId}</name>
-	<description>Java Swing component which provides a text screen display.</description>
+	<description>Parent pom providing dependency and plugin management for JScreen modules.</description>
 	<url>https://github.com/diggernet/JScreen</url>
 	<licenses>
 		<license>
@@ -55,7 +55,12 @@
 			</dependency>
 			<dependency>
 				<groupId>net.digger</groupId>
-				<artifactId>jscreen-font-pc-ibm</artifactId>
+				<artifactId>jscreen-fonts-ibm</artifactId>
+				<version>${project.version}</version>
+			</dependency>
+			<dependency>
+				<groupId>net.digger</groupId>
+				<artifactId>jscreen-fonts-cbm</artifactId>
 				<version>${project.version}</version>
 			</dependency>
 			<!-- https://mvnrepository.com/artifact/net.digger/utils -->

@@ -20,7 +20,7 @@ package net.digger.ui.screen.charmap;
  */
 
 /**
- * Character translation map for PETSCII.
+ * Character translation map for CBM fonts.
  * @author walton
  */
 public class CBMCharMap extends JScreenCharMap {

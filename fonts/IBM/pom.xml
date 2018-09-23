@@ -13,6 +13,19 @@
 	<name>${project.groupId}:${project.artifactId}</name>
 	<description>IBM PC fonts for JScreen.</description>
 
+	<licenses>
+		<license>
+			<name>GNU Lesser General Public License (LGPL), Version 3.0</name>
+			<url>https://www.gnu.org/licenses/lgpl-3.0.html</url>
+			<comments>License for Java code.</comments>
+		</license>
+		<license>
+			<name>Creative Commons Attribution-ShareAlike 4.0 International (CC BY-SA 4.0)</name>
+			<url>https://creativecommons.org/licenses/by-sa/4.0/</url>
+			<comments>License for TTF font files.</comments>
+		</license>
+	</licenses>
+
 	<dependencies>
 		<dependency>
 			<groupId>net.digger</groupId>
