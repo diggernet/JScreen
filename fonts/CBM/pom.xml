@@ -1,0 +1,40 @@
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+	<modelVersion>4.0.0</modelVersion>
+
+	<parent>
+		<groupId>net.digger</groupId>
+		<artifactId>jscreen-parent</artifactId>
+		<version>1.2.0</version>
+		<relativePath>../..</relativePath>
+	</parent>
+
+	<artifactId>jscreen-fonts-cbm</artifactId>
+
+	<name>${project.groupId}:${project.artifactId}</name>
+	<description>Commodore fonts for JScreen.</description>
+
+	<licenses>
+		<license>
+			<name>GNU Lesser General Public License (LGPL), Version 3.0</name>
+			<url>https://www.gnu.org/licenses/lgpl-3.0.html</url>
+			<comments>License for Java code.</comments>
+		</license>
+		<license>
+			<name>Kreative Software Relay Fonts Free Use License v1.2f</name>
+			<url>http://www.kreativekorp.com/software/fonts/FreeLicense.txt</url>
+			<comments>License for TTF font files.</comments>
+		</license>
+	</licenses>
+
+	<dependencies>
+		<dependency>
+			<groupId>net.digger</groupId>
+			<artifactId>jscreen</artifactId>
+		</dependency>
+		<dependency>
+			<groupId>org.apache.commons</groupId>
+			<artifactId>commons-collections4</artifactId>
+		</dependency>
+	</dependencies>
+</project>

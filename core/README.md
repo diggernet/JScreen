@@ -6,7 +6,7 @@ environment, while retaining their original look and feel.  But it was also
 designed to enable non-PC text modes, given suitable fonts and character mapping.
 
 
-## Hello World
+## Usage
 Getting started is this simple:
 
 	import net.digger.ui.screen.JScreen;
@@ -18,17 +18,17 @@ Getting started is this simple:
 		}
 	}
 
-The sample programs in [JScreen-Demo](demo) show off some more of what JScreen can do.
+The JScreenDemo and DisplayANSI sample programs show off some more of what JScreen can do.
 And, of course, the source is available to learn every nuance.
 
 
-## Modules
-JScreen has the following modules:
+## Maven configuration
 
-* [JScreen](core) The main JScreen library.
-* [JScreen-Demo](demo) Demo programs for JScreen.
-* [JScreen-Fonts-IBM](fonts/IBM) IBM PC font pack for JScreen.
-* [JScreen-Fonts-CBM](fonts/CBM) Commodore font pack for JScreen.
+		<dependency>
+			<groupId>net.digger</groupId>
+			<artifactId>jscreen</artifactId>
+			<version>1.2.0</version>
+		</dependency>
 
 
 ## License
