@@ -1,4 +1,14 @@
 
+23 Sep 2018 - V1.2.0
+- First Maven release.
+- Restructure as modules for better control of what is included in a project.
+- Add Commodore fonts.
+- Add setScrollFillMethod() to control how the new row is filled when scrolling.
+- Add double-click and triple-click to select word or line.
+- Rename selectTextFont() to setTextFont().
+- Add getWindowCellChar(), printf(), clearSelection(), selectCells().
+
+
 18 Nov 2017 - v1.1
 - Add methods for selecting region of screen.
 - Add ability to select screen text with mouse.
