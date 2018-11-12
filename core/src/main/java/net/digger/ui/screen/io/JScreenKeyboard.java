@@ -1,5 +1,6 @@
 package net.digger.ui.screen.io;
 
+import java.awt.Component;
 import java.awt.Toolkit;
 import java.awt.datatransfer.Clipboard;
 import java.awt.datatransfer.DataFlavor;
@@ -9,6 +10,10 @@ import java.awt.event.KeyEvent;
 import java.awt.event.KeyListener;
 import java.io.IOException;
 import java.util.ArrayDeque;
+import java.util.HashMap;
+import java.util.Map;
+
+import org.apache.commons.lang3.StringUtils;
 
 import net.digger.ui.screen.JScreen;
 
@@ -50,23 +55,143 @@ public class JScreenKeyboard {
 	public JScreenKeyboard(JScreen screen) {
 		this.screen = screen;
 		
-		// key listener
-		screen.getComponent().addKeyListener(new KeyListener() {
+		/**
+		 * Key listener.
+		 * KEY_RELEASED events are ignored, and KEY_PRESSED events are ignored unless isActionKey().
+		 * On Windows, some CTRL combination KEY_TYPED events are either reported wrong (^M -> ^J)
+		 * or are not reported at all.  This listener will fake KEY_TYPED events for those combinations,
+		 * and then if the events actually occur (such as on Linux) will suppress the duplicate
+		 * real event.
+		 */
+		KeyListener listener = new KeyListener() {
+			/**
+			 * Map of KEY_PRESSED key code to KEY_TYPED key character to fake.
+			 */
+			@SuppressWarnings("serial")
+			private final Map<Integer, Character> winCtrlKeyMap = new HashMap<Integer, Character>() {{
+				put(77, (char)0x0d);	// ^M
+				put(49, '1');			// ^1 (number row)
+				put(50, '2');			// ^2 (number row)
+				put(51, '3');			// ^3 (number row)
+				put(52, '4');			// ^4 (number row)
+				put(53, '5');			// ^5 (number row)
+				put(54, '6');			// ^6 (number row)
+				put(55, '7');			// ^7 (number row)
+				put(56, '8');			// ^8 (number row)
+				put(57, '9');			// ^9 (number row)
+				put(48, '0');			// ^0 (number row)
+				put(45, '-');			// ^- (number row)
+				put(61, '=');			// ^= (number row)
+				put(96, '0');			// ^0 (keypad)
+				put(97, '1');			// ^1 (keypad)
+				put(98, '2');			// ^2 (keypad)
+				put(99, '3');			// ^3 (keypad)
+				put(100, '4');			// ^4 (keypad)
+				put(101, '5');			// ^5 (keypad)
+				put(102, '6');			// ^6 (keypad)
+				put(103, '7');			// ^7 (keypad)
+				put(104, '8');			// ^8 (keypad)
+				put(105, '9');			// ^9 (keypad)
+				put(106, '*');			// * (keypad)
+				put(107, '+');			// + (keypad)
+				put(109, '-');			// - (keypad)
+				put(110, '.');			// . (keypad)
+				put(111, '/');			// / (keypad)
+			}};
+			/**
+			 * Map of KEY_TYPED fake key character to SHIFTed fake key character.
+			 */
+			@SuppressWarnings("serial")
+			private final Map<Character, Character> winShiftKeyMap = new HashMap<Character, Character>() {{
+				put('1', '!');
+				put('2', '@');
+				put('3', '#');
+				put('4', '$');
+				put('5', '%');
+				put('6', '^');
+				put('7', '&');
+				put('8', '*');
+				put('9', '(');
+				put('0', ')');
+				put('-', (char)0x1f);
+				put('=', '+');
+			}};
+			/**
+			 * Faked KEY_TYPED key character.
+			 */
+			private Character faked = null;
+			
 			@Override
 			public void keyTyped(KeyEvent e) {
+				if (faked != null) {
+					// if KEY_TYPED event was faked...
+					if (e.getKeyChar() == faked) {
+						// don't add duplicate real event
+						if (KEY_DEBUG) {
+							System.out.print("Suppressed: (faked=" + faked + ")");
+						}
+						faked = null;
+						return;
+					} else if ((e.getKeyChar() == (char)0x0a) && (faked == (char)0x0d)) {
+						// don't add modified real event
+						if (KEY_DEBUG) {
+							System.out.print("Suppressed hack: (faked=" + faked + ")");
+						}
+						faked = null;
+						return;
+					}
+					faked = null;
+				}
 				addKeyEvent(e);
 			}
 			
 			@Override
 			public void keyReleased(KeyEvent e) {
-				addKeyEvent(e);
+				// ignore KEY_RELEASED events
+//				addKeyEvent(e);
 			}
 			
 			@Override
 			public void keyPressed(KeyEvent e) {
-				addKeyEvent(e);
+				if (KEY_DEBUG) {
+					dumpKey(e);
+				}
+				if (e.isActionKey()) {
+					// add if there won't be a KEY_TYPED event
+					addKeyEvent(e);
+					return;
+				}
+				Character c = winCtrlKeyMap.get(e.getKeyCode());
+				if (c != null) {
+					int modifiers = e.getModifiersEx();
+					boolean ctrl = ((modifiers & KeyEvent.CTRL_DOWN_MASK) != 0);
+					boolean shift = ((modifiers & KeyEvent.SHIFT_DOWN_MASK) != 0);
+					boolean numpad = (e.getKeyLocation() == KeyEvent.KEY_LOCATION_NUMPAD);
+					if (ctrl) {
+						// only fake an event if CTRL is pressed
+						if (!shift || !numpad) {
+							// don't fake an event if SHIFT is pressed on numpad
+							if (shift) {
+								// fake a different char if SHIFT is pressed
+								Character c2 = winShiftKeyMap.get(c);
+								if (c2 != null) {
+									c = c2;
+								}
+							}
+							// fake a key typed event
+							KeyEvent e2 = new KeyEvent((Component)e.getSource(), KeyEvent.KEY_TYPED, e.getWhen(),
+									e.getModifiers() | e.getModifiersEx(), 0, c, KeyEvent.KEY_LOCATION_UNKNOWN);
+							if (KEY_DEBUG) {
+								System.out.print("Faked:");
+							}
+							addKeyEvent(e2);
+							faked = c;
+						}
+					}
+				}
 			}
-		});
+		};
+		screen.getComponent().addKeyListener(listener);
 	}
 
 	// ##### Key buffer methods #####
@@ -134,19 +259,10 @@ public class JScreenKeyboard {
 	
 	/**
 	 * Add a KeyEvent to the key buffer.
-	 * KEY_RELEASED events are ignored, and KEY_PRESSED events are ignored unless isActionKey().
 	 * @param event Event to add to buffer.
 	 */
 	public void addKeyEvent(KeyEvent event) {
 		if (!keyBufferEnabled) {
-			return;
-		}
-		if (event.getID() == KeyEvent.KEY_RELEASED) {
-			// ignore KEY_RELEASED events
-			return;
-		}
-		if ((event.getID() == KeyEvent.KEY_PRESSED) && !event.isActionKey()) {
-			// only add if there won't be a KEY_TYPED event
 			return;
 		}
 		synchronized(keyBuffer) {
@@ -253,69 +369,60 @@ public class JScreenKeyboard {
 	 * @param event Key event to display details of.
 	 */
 	private void dumpKey(KeyEvent event) {
+		System.out.println();
+
 		//You should only rely on the key char if the event
 		//is a key typed event.
 		int id = event.getID();
-		String keyString;
-		if (id == KeyEvent.KEY_TYPED) {
-			char c = event.getKeyChar();
-			keyString = "key character = '" + c + "' (" + (int)c + " = 0x" + Integer.toHexString(c) + ")";
-		} else {
-			int keyCode = event.getKeyCode();
-			keyString = "key code = " + keyCode
-					+ " ("
-					+ KeyEvent.getKeyText(keyCode)
-					+ ")";
-		}
-
-		int modifiersEx = event.getModifiersEx();
-		String modString = "extended modifiers = " + modifiersEx;
-		String tmpString = KeyEvent.getModifiersExText(modifiersEx);
-		if (tmpString.length() > 0) {
-			modString += " (" + tmpString + ")";
-		} else {
-			modString += " (no extended modifiers)";
-		}
-
-		String actionString = "action key? ";
-		if (event.isActionKey()) {
-			actionString += "YES";
-		} else {
-			actionString += "NO";
-		}
-
-		String locationString = "key location: ";
-		int location = event.getKeyLocation();
-		if (location == KeyEvent.KEY_LOCATION_STANDARD) {
-			locationString += "standard";
-		} else if (location == KeyEvent.KEY_LOCATION_LEFT) {
-			locationString += "left";
-		} else if (location == KeyEvent.KEY_LOCATION_RIGHT) {
-			locationString += "right";
-		} else if (location == KeyEvent.KEY_LOCATION_NUMPAD) {
-			locationString += "numpad";
-		} else { // (location == KeyEvent.KEY_LOCATION_UNKNOWN)
-			locationString += "unknown";
-		}
-		
-		String newline = System.getProperty("line.separator");
 		switch (id) {
 			case KeyEvent.KEY_PRESSED:
-				System.out.println("KEY_PRESSED");
+				System.out.println("KEY_PRESSED:");
 				break;
 			case KeyEvent.KEY_RELEASED:
-				System.out.println("KEY_RELEASED");
+				System.out.println("KEY_RELEASED:");
 				break;
 			case KeyEvent.KEY_TYPED:
-				System.out.println("KEY_TYPED");
+				System.out.println("KEY_TYPED:");
 				break;
 			default:
-				System.out.println("Unknown event type");
+				System.out.println("Unknown event type:");
 				break;
 		}
-		System.out.println("    " + keyString + newline
-				+ "    " + modString + newline
-				+ "    " + actionString + newline
-				+ "    " + locationString + newline);
+
+//		if (id == KeyEvent.KEY_TYPED) {
+			char c = event.getKeyChar();
+			System.out.printf("\tkey character = '%c' (%d = 0x%s)\n", c, (int)c, Integer.toHexString(c));
+//		} else {
+			int keyCode = event.getKeyCode();
+			System.out.printf("\tkey code = %d (%s)\n", keyCode, KeyEvent.getKeyText(keyCode));
+//		}
+
+		int modifiersEx = event.getModifiersEx();
+		String modString = KeyEvent.getModifiersExText(modifiersEx);
+		if (StringUtils.isBlank(modString)) {
+			modString = "no extended modifiers";
+		}
+		System.out.printf("\textended modifiers = %d (%s)\n", modifiersEx, modString);
+
+		System.out.printf("\taction key? %s\n", event.isActionKey() ? "YES" : "NO");
+
+		switch (event.getKeyLocation()) {
+			case KeyEvent.KEY_LOCATION_STANDARD:
+				System.out.println("\tkey location: standard");
+				break;
+			case KeyEvent.KEY_LOCATION_LEFT:
+				System.out.println("\tkey location: left");
+				break;
+			case KeyEvent.KEY_LOCATION_RIGHT:
+				System.out.println("\tkey location: right");
+				break;
+			case KeyEvent.KEY_LOCATION_NUMPAD:
+				System.out.println("\tkey location: numpad");
+				break;
+			case KeyEvent.KEY_LOCATION_UNKNOWN:
+			default:
+				System.out.println("\tkey location: unknown");
+				break;
+		}
 	}
 }
