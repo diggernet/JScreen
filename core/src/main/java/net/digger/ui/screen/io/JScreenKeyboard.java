@@ -13,8 +13,6 @@ import java.util.ArrayDeque;
 import java.util.HashMap;
 import java.util.Map;
 
-import org.apache.commons.lang3.StringUtils;
-
 import net.digger.ui.screen.JScreen;
 
 /**
@@ -153,9 +151,6 @@ public class JScreenKeyboard {
 			
 			@Override
 			public void keyPressed(KeyEvent e) {
-				if (KEY_DEBUG) {
-					dumpKey(e);
-				}
 				if (e.isActionKey()) {
 					// add if there won't be a KEY_TYPED event
 					addKeyEvent(e);
@@ -267,9 +262,6 @@ public class JScreenKeyboard {
 		}
 		synchronized(keyBuffer) {
 			keyBuffer.add(event);
-			if (KEY_DEBUG) {
-				dumpKey(keyBuffer.peekLast());
-			}
 			keyBuffer.notify();
 		}
 	}
@@ -362,67 +354,5 @@ public class JScreenKeyboard {
 			}
 		} while (ch != 10);
 		return input;
-	}
-	
-	/**
-	 * Dumps details of the given KeyEvent to STDOUT.
-	 * @param event Key event to display details of.
-	 */
-	private void dumpKey(KeyEvent event) {
-		System.out.println();
-
-		//You should only rely on the key char if the event
-		//is a key typed event.
-		int id = event.getID();
-		switch (id) {
-			case KeyEvent.KEY_PRESSED:
-				System.out.println("KEY_PRESSED:");
-				break;
-			case KeyEvent.KEY_RELEASED:
-				System.out.println("KEY_RELEASED:");
-				break;
-			case KeyEvent.KEY_TYPED:
-				System.out.println("KEY_TYPED:");
-				break;
-			default:
-				System.out.println("Unknown event type:");
-				break;
-		}
-
-//		if (id == KeyEvent.KEY_TYPED) {
-			char c = event.getKeyChar();
-			System.out.printf("\tkey character = '%c' (%d = 0x%s)\n", c, (int)c, Integer.toHexString(c));
-//		} else {
-			int keyCode = event.getKeyCode();
-			System.out.printf("\tkey code = %d (%s)\n", keyCode, KeyEvent.getKeyText(keyCode));
-//		}
-
-		int modifiersEx = event.getModifiersEx();
-		String modString = KeyEvent.getModifiersExText(modifiersEx);
-		if (StringUtils.isBlank(modString)) {
-			modString = "no extended modifiers";
-		}
-		System.out.printf("\textended modifiers = %d (%s)\n", modifiersEx, modString);
-
-		System.out.printf("\taction key? %s\n", event.isActionKey() ? "YES" : "NO");
-
-		switch (event.getKeyLocation()) {
-			case KeyEvent.KEY_LOCATION_STANDARD:
-				System.out.println("\tkey location: standard");
-				break;
-			case KeyEvent.KEY_LOCATION_LEFT:
-				System.out.println("\tkey location: left");
-				break;
-			case KeyEvent.KEY_LOCATION_RIGHT:
-				System.out.println("\tkey location: right");
-				break;
-			case KeyEvent.KEY_LOCATION_NUMPAD:
-				System.out.println("\tkey location: numpad");
-				break;
-			case KeyEvent.KEY_LOCATION_UNKNOWN:
-			default:
-				System.out.println("\tkey location: unknown");
-				break;
-		}
 	}
 }

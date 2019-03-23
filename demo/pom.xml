@@ -1,4 +1,5 @@
-<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+<project xmlns="http://maven.apache.org/POM/4.0.0"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
 	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
 	<modelVersion>4.0.0</modelVersion>
 
@@ -40,18 +41,55 @@
 				<artifactId>maven-assembly-plugin</artifactId>
 				<version>3.1.0</version>
 				<configuration>
+					<appendAssemblyId>false</appendAssemblyId>
 					<descriptorRefs>
 						<descriptorRef>jar-with-dependencies</descriptorRef>
 					</descriptorRefs>
-					<appendAssemblyId>false</appendAssemblyId>
-					<archive>
-						<manifest>
-							<mainClass>net.digger.ui.DemoRunner</mainClass>
-						</manifest>
-					</archive>
 				</configuration>
 				<executions>
 					<execution>
+						<id>demo</id>
+						<configuration>
+							<archive>
+								<manifest>
+									<mainClass>net.digger.ui.DemoRunner</mainClass>
+								</manifest>
+							</archive>
+						</configuration>
+						<phase>package</phase>
+						<goals>
+							<goal>single</goal>
+						</goals>
+					</execution>
+					<execution>
+						<id>keyevent</id>
+						<configuration>
+							<!-- Do not deploy or install the executable jar. -->
+							<attach>false</attach>
+							<finalName>KeyEventTest</finalName>
+							<archive>
+								<manifest>
+									<mainClass>net.digger.ui.KeyEventTest</mainClass>
+								</manifest>
+							</archive>
+						</configuration>
+						<phase>package</phase>
+						<goals>
+							<goal>single</goal>
+						</goals>
+					</execution>
+					<execution>
+						<id>keyboard</id>
+						<configuration>
+							<!-- Do not deploy or install the executable jar. -->
+							<attach>false</attach>
+							<finalName>KeyboardTest</finalName>
+							<archive>
+								<manifest>
+									<mainClass>net.digger.ui.KeyboardTest</mainClass>
+								</manifest>
+							</archive>
+						</configuration>
 						<phase>package</phase>
 						<goals>
 							<goal>single</goal>
